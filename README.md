@@ -161,5 +161,5 @@ docker compose exec db psql -U curtain_user -d curtain_db
 
 Atualmente, o projeto está em desenvolvimento com as seguintes observações:
 
--Gestão de Peças: A regra de negócio está 100% operacional e testada.
+- Gestão de Peças: A regra de negócio está 100% operacional e testada.
 - Cadastro de Funcionários: O cadastro de funcionários apresenta uma instabilidade devido a um erro de persistência no banco de dados (PostgreSQL). 
