@@ -1,0 +1,75 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  overflow-x: auto;
+}
+
+.axis {
+  position: relative;
+  height: 24px;
+  margin-left: 140px;
+  flex-shrink: 0;
+}
+
+.monthLabel {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  white-space: nowrap;
+}
+
+.lanes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.lane {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  height: 28px;
+}
+
+.laneLabel {
+  width: 128px;
+  min-width: 128px;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-weight: var(--weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  padding-right: var(--sp-2);
+  flex-shrink: 0;
+}
+
+.track {
+  flex: 1;
+  position: relative;
+  height: 8px;
+  background: var(--scrim);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: var(--radius-full);
+  opacity: 0.75;
+  cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.bar:hover {
+  opacity: 1;
+}

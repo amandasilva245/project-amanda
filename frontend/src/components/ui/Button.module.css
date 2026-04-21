@@ -1,0 +1,109 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.xs { height: 26px; padding: 0 var(--sp-2-5); font-size: var(--text-xs); border-radius: var(--radius-sm); }
+.sm { height: 32px; padding: 0 var(--sp-3);   font-size: var(--text-xs); }
+.md { height: 38px; padding: 0 var(--sp-4);   font-size: var(--text-sm); }
+.lg { height: 44px; padding: 0 var(--sp-5);   font-size: var(--text-base); }
+
+/* Variants */
+.primary {
+  background: var(--spotlight);
+  color: #0B0B10;
+  border-color: var(--spotlight);
+  font-weight: var(--weight-semibold);
+}
+.primary:hover:not(:disabled) {
+  background: var(--spotlight-text);
+  border-color: var(--spotlight-text);
+  box-shadow: 0 0 18px var(--spotlight-glow);
+}
+
+.secondary {
+  background: var(--backdrop);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+.secondary:hover:not(:disabled) {
+  background: var(--flat);
+  border-color: var(--border-strong);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+.ghost:hover:not(:disabled) {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+
+.destructive {
+  background: var(--error-bg);
+  color: var(--error);
+  border-color: rgba(243,106,106,0.25);
+}
+.destructive:hover:not(:disabled) {
+  background: rgba(243,106,106,0.2);
+  border-color: rgba(243,106,106,0.4);
+}
+
+.outline {
+  background: transparent;
+  color: var(--spotlight-text);
+  border-color: rgba(223,168,67,0.3);
+}
+.outline:hover:not(:disabled) {
+  background: var(--spotlight-glow);
+  border-color: var(--spotlight);
+}
+
+/* Icon */
+.icon {
+  flex-shrink: 0;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
