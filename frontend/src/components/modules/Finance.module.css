@@ -1,0 +1,263 @@
+/* ═══ Financeiro: livro-caixa em moldura dourada ═══ */
+.tableWrap {
+  overflow-x: auto;
+  background: var(--wing);
+  background-image: var(--gradient-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  min-width: 720px;
+}
+
+.table th {
+  text-align: left;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid rgba(169, 135, 74, 0.3);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: rgba(169, 135, 74, 0.05); }
+
+.num { text-align: right; white-space: nowrap; }
+.center { text-align: center; }
+.muted { color: var(--text-secondary); white-space: nowrap; }
+
+.descCell {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2-5);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-top: 7px;
+  flex-shrink: 0;
+  background: var(--error);
+}
+
+.dot[data-type='income'] { background: var(--success); }
+
+.desc {
+  display: block;
+  color: var(--text-primary);
+}
+
+.sub {
+  display: block;
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-semibold);
+  color: var(--error);
+}
+
+.amount[data-type='income'] { color: var(--success); }
+
+.check {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.check:disabled { cursor: default; }
+
+.actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.iconBtn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.iconBtn:hover { color: var(--gold-bright); border-color: var(--border-default); }
+.iconDanger:hover { color: var(--error); border-color: rgba(224, 127, 136, 0.35); background: var(--error-bg); }
+.iconBtn:focus-visible, .check:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.empty {
+  padding: var(--sp-12) var(--sp-4);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+/* Seletor receita/despesa */
+.typeSwitch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+.typeBtn {
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--field);
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.typeBtn:hover { border-color: var(--border-strong); color: var(--ivory); }
+.typeBtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.type_expense {
+  border-color: rgba(224, 127, 136, 0.6);
+  background: rgba(84, 29, 36, 0.55);
+  color: #F0B4BA;
+}
+
+.type_income {
+  border-color: rgba(157, 190, 138, 0.6);
+  background: rgba(157, 190, 138, 0.12);
+  color: var(--success);
+}
+
+/* Filtros */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-3);
+}
+
+.filters > * { min-width: 170px; flex: 1 1 170px; }
+.filters > .search { flex: 2 1 240px; }
+
+/* Resumo por produção */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-4);
+}
+
+.summaryCard {
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--wing);
+  background-image: var(--gradient-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.summaryLabel {
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.summaryValue {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-semibold);
+  color: var(--ivory);
+  margin-top: var(--sp-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.budgetBar {
+  height: 6px;
+  margin-top: var(--sp-2);
+  border-radius: 3px;
+  background: var(--border-subtle);
+  overflow: hidden;
+}
+
+.budgetFill {
+  height: 100%;
+  background: var(--gradient-gold);
+}
+
+.budgetFill[data-over='true'] { background: var(--error); }
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: var(--sp-5);
+}
+
+.panel {
+  padding: var(--sp-5);
+  background: var(--wing);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.catList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.catRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.catRow span:last-child { font-variant-numeric: tabular-nums; color: var(--text-primary); }
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+@media (max-width: 900px) {
+  .summary { grid-template-columns: 1fr 1fr; }
+  .twoCol { grid-template-columns: 1fr; }
+}

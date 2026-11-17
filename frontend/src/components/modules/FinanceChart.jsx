@@ -51,13 +51,13 @@ export default function FinanceChart({ data = [], title }) {
               axisLine={false}
               tickLine={false}
               tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
-              tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+              tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)} mil` : `${v}`)}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.06)', strokeWidth: 1 }} />
             <Area
               type="monotone"
               dataKey="income"
-              name="Income"
+              name="Receitas"
               stroke="#9DBE8A"
               strokeWidth={2}
               fill="url(#incomeGradient)"
@@ -67,7 +67,7 @@ export default function FinanceChart({ data = [], title }) {
             <Area
               type="monotone"
               dataKey="expense"
-              name="Expense"
+              name="Despesas"
               stroke="#E07F88"
               strokeWidth={2}
               fill="url(#expenseGradient)"

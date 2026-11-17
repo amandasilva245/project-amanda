@@ -19,6 +19,17 @@ export default function Settings() {
   const { user, logout } = useAuthStore()
 
   const [activeSection, setSection] = useState('profile')
+  const [sysInfo, setSysInfo] = useState(null)
+  const [sysError, setSysError] = useState(false)
+
+  // Informações do sistema vindas da API (TCC §4.2), carregadas ao abrir "Sobre"
+  useEffect(() => {
+    if (activeSection !== 'about') return
+    setSysError(false)
+    api.get('/api/v1/system/info')
+      .then((res) => setSysInfo(res.data))
+      .catch(() => { setSysInfo(null); setSysError(true) })
+  }, [activeSection])
 
   // Profile form
   const [profile, setProfile] = useState({ full_name: '', phone: '', bio: '' })
@@ -291,9 +302,16 @@ export default function Settings() {
               <div className={styles.aboutGrid}>
                 {[
                   { label: 'Produto',   value: 'Curtain — Theatrical Operations Platform' },
-                  { label: 'Versão',    value: '1.0.0' },
-                  { label: 'Ambiente',  value: import.meta.env.MODE === 'production' ? 'Produção' : 'Desenvolvimento' },
-                  { label: 'API',       value: window.location.origin },
+                  { label: 'Versão',    value: sysInfo?.version ?? '—' },
+                  { label: 'API',       value: sysError ? 'Indisponível' : sysInfo ? 'Operacional' : 'Verificando…' },
+                  { label: 'Banco de dados', value: sysInfo ? (sysInfo.database === 'ok' ? 'Operacional' : 'Indisponível') : '—' },
+                  ...(sysInfo?.environment ? [
+                    { label: 'Ambiente', value: sysInfo.environment },
+                    { label: 'Migração', value: sysInfo.migration ?? 'sem controle de versão' },
+                    { label: 'Python', value: sysInfo.python },
+                    { label: 'Documentação da API', value: sysInfo.docs_enabled ? `${window.location.origin}/api/docs` : 'Desligada em produção' },
+                  ] : []),
+                  { label: 'Horário do servidor', value: sysInfo ? new Date(sysInfo.server_time).toLocaleString('pt-BR') : '—' },
                   { label: 'Conta',     value: user?.email ?? '—' },
                   { label: 'Perfil',    value: user?.role?.replace('_', ' ') ?? '—' },
                 ].map(({ label, value }) => (

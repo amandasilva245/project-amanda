@@ -12,6 +12,7 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import ProductionFormModal from '@/components/modules/ProductionFormModal'
 import ParticipantModal from '@/components/modules/ParticipantModal'
 import ProductionSchedule from '@/components/modules/ProductionSchedule'
+import ProductionFinance from '@/components/modules/ProductionFinance'
 import { parseDate } from '@/utils/helpers'
 import { can } from '@/utils/permissions'
 import { DEPARTMENTS, GENRES, fmtBRL } from '@/utils/labels'
@@ -121,6 +122,7 @@ export default function ProductionDetail() {
     { key: 'overview', label: 'Visão geral' },
     { key: 'cast', label: 'Companhia' },
     { key: 'schedule', label: 'Agenda' },
+    ...(can(user, 'FINANCE_WRITE') ? [{ key: 'finance', label: 'Financeiro' }] : []),
   ]
 
   return (
@@ -370,6 +372,8 @@ export default function ProductionDetail() {
       )}
 
       {activeTab === 'schedule' && <ProductionSchedule production={prod} />}
+
+      {activeTab === 'finance' && <ProductionFinance production={prod} />}
 
       <ProductionFormModal
         open={editing}

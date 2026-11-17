@@ -26,3 +26,12 @@ def get_occupancy_trends(
 ):
     service = InsightService(db)
     return service.get_occupancy_trends()
+
+
+@router.get("/finance-by-category")
+def get_finance_by_category(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(*INSIGHTS)),
+):
+    """Receitas e despesas agregadas por categoria (RF26)."""
+    return InsightService(db).get_category_breakdown()

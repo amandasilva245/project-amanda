@@ -4,6 +4,7 @@ import api from '@/services/api'
 export const useInsightStore = create((set) => ({
   metrics: null,
   occupancyTrends: [],
+  categoryBreakdown: [],
 
   fetchMetrics: async () => {
     try {
@@ -11,6 +12,15 @@ export const useInsightStore = create((set) => ({
       set({ metrics: res.data })
     } catch {
       set({ metrics: null })
+    }
+  },
+
+  fetchCategoryBreakdown: async () => {
+    try {
+      const res = await api.get('/api/v1/insights/finance-by-category')
+      set({ categoryBreakdown: res.data })
+    } catch {
+      set({ categoryBreakdown: [] })
     }
   },
 

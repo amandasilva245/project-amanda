@@ -145,6 +145,25 @@ class InsightService:
             "total_tickets_sold": total_tickets_sold,
         }
 
+    def get_category_breakdown(self) -> List[Dict]:
+        """Receitas e despesas por categoria, em todas as produções (RF26)."""
+        rows = (
+            self.db.query(
+                FinancialTransaction.category,
+                FinancialTransaction.type,
+                func.sum(FinancialTransaction.amount),
+            )
+            .group_by(FinancialTransaction.category, FinancialTransaction.type)
+            .all()
+        )
+        by_cat: Dict[str, Dict[str, float]] = defaultdict(lambda: {"income": 0.0, "expense": 0.0})
+        for category, type_, total in rows:
+            by_cat[category.value]["income" if type_ == TransactionType.INCOME else "expense"] += float(total or 0)
+        return sorted(
+            ({"category": c, **v} for c, v in by_cat.items()),
+            key=lambda r: -(r["income"] + r["expense"]),
+        )
+
     def get_occupancy_trends(self) -> List[Dict]:
         batches = (
             self.db.query(TicketBatch)
