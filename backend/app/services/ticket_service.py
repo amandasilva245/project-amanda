@@ -17,6 +17,7 @@ from sqlalchemy import func, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.config import local_time
 from app.models.production import Production
 from app.models.ticket import Ticket, TicketBatch, TicketBatchStatus, TicketStatus
 
@@ -232,7 +233,7 @@ class TicketService:
             raise TicketError("Código não encontrado.", 404)
         if result is None:
             if ticket.status == TicketStatus.USED:
-                when = ticket.used_at.astimezone().strftime("%d/%m %H:%M") if ticket.used_at else "antes"
+                when = local_time(ticket.used_at).strftime("%d/%m %H:%M") if ticket.used_at else "antes"
                 raise TicketError(f"Ingresso já utilizado ({when}).", 409)
             if ticket.status == TicketStatus.CANCELLED:
                 raise TicketError("Ingresso cancelado.", 409)

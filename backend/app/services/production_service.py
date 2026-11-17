@@ -119,6 +119,17 @@ class ProductionService:
         return production
 
     def delete(self, production: Production) -> None:
+        from app.models.order import TicketOrder
+        from app.models.ticket import TicketBatch
+
+        has_orders = (
+            self.db.query(TicketOrder.id)
+            .join(TicketBatch, TicketBatch.id == TicketOrder.batch_id)
+            .filter(TicketBatch.production_id == production.id)
+            .first()
+        )
+        if has_orders:
+            raise ValueError("Esta produção tem pedidos da venda online; arquive-a em vez de excluir.")
         self.db.delete(production)
         self.db.commit()
 

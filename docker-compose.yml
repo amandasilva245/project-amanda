@@ -44,6 +44,12 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@curtain.app}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Venda online (fase 8): desligada por padrão; só credencial de TESTE
+      PUBLIC_SALES_ENABLED: ${PUBLIC_SALES_ENABLED:-false}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-http://localhost:5173}
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-}
+      MERCADOPAGO_ACCESS_TOKEN: ${MERCADOPAGO_ACCESS_TOKEN:-}
+      MERCADOPAGO_WEBHOOK_SECRET: ${MERCADOPAGO_WEBHOOK_SECRET:-}
     depends_on:
       db:
         condition: service_healthy

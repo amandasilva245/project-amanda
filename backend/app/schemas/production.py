@@ -77,6 +77,8 @@ class ProductionCreate(BaseModel):
     venue_capacity: Optional[int] = Field(default=None, gt=0)
     budget_total: Optional[Decimal] = Field(default=None, ge=0)
     color_accent: Optional[str] = Field(default=None, pattern=r"^#[0-9A-Fa-f]{6}$")
+    # Aparece na página pública de ingressos (fase 8)
+    is_public: bool = False
 
     @model_validator(mode="after")
     def _period(self):
@@ -99,6 +101,7 @@ class ProductionUpdate(BaseModel):
     budget_total: Optional[Decimal] = Field(default=None, ge=0)
     poster_url: Optional[str] = None
     color_accent: Optional[str] = Field(default=None, pattern=r"^#[0-9A-Fa-f]{6}$")
+    is_public: Optional[bool] = None
 
 
 class ProductionResponse(BaseModel):
@@ -118,6 +121,7 @@ class ProductionResponse(BaseModel):
     budget_total: Optional[Decimal] = None
     poster_url: Optional[str] = None
     color_accent: Optional[str] = None
+    is_public: bool = False
     created_by: UserSummary
     created_at: datetime
     updated_at: datetime

@@ -299,3 +299,24 @@
 }
 
 .header { flex-wrap: wrap; gap: var(--sp-4); }
+
+/* ── Venda online (fase 8) ── */
+.online {
+  margin-top: var(--sp-10);
+  padding: var(--sp-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--wing);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.onlineHead { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; }
+.onlineLink { display: inline-flex; align-items: center; gap: var(--sp-1); color: var(--gold-bright); font-size: var(--text-sm); }
+.onlineHint { margin: 0; font-size: var(--text-sm); color: var(--text-muted); }
+.onlineEmpty { margin: 0; color: var(--text-muted); font-size: var(--text-sm); }
+.tableWrap { overflow-x: auto; }
+.ordersTable { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.ordersTable th { text-align: left; font-weight: 500; color: var(--text-muted); padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border-default); white-space: nowrap; }
+.ordersTable td { padding: var(--sp-2-5) var(--sp-3); border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+.cellSub { display: block; color: var(--text-muted); font-size: var(--text-xs); }

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Ticket, Plus, ScanLine, CheckCircle2, XCircle, Pencil, List, ShoppingCart } from 'lucide-react'
+import { Ticket, Plus, ScanLine, CheckCircle2, XCircle, Pencil, List, ShoppingCart, Globe, ExternalLink } from 'lucide-react'
 import { useProductionStore } from '@/store/productionStore'
 import { useTicketStore } from '@/store/ticketStore'
 import { useAuthStore } from '@/store/authStore'
@@ -18,7 +18,7 @@ const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1)
 export default function Tickets() {
   const user = useAuthStore((s) => s.user)
   const { productions, fetchProductions } = useProductionStore()
-  const { batches, summaries, loading, error, fetchBatches, checkIn } = useTicketStore()
+  const { batches, summaries, orders, loading, error, fetchBatches, fetchOrders, checkIn } = useTicketStore()
   const canManage = can(user, 'TICKETS_MANAGE')
 
   const [batchModal, setBatchModal] = useState(null) // null | 'new' | lote
@@ -29,7 +29,7 @@ export default function Tickets() {
   const [checkResult, setCheckResult] = useState(null)
   const codeRef = useRef(null)
 
-  useEffect(() => { fetchProductions(); fetchBatches() }, [])
+  useEffect(() => { fetchProductions(); fetchBatches(); if (canManage) fetchOrders() }, [])
 
   const byProduction = useMemo(() => {
     const groups = new Map()
@@ -190,6 +190,49 @@ export default function Tickets() {
           )
         })}
       </div>
+
+      {canManage && (
+        <section className={styles.online} aria-labelledby="online-title">
+          <div className={styles.onlineHead}>
+            <div className={styles.checkinHead}>
+              <Globe size={18} strokeWidth={1.75} />
+              <h2 id="online-title" className={styles.checkinTitle}>Venda online</h2>
+            </div>
+            <a className={styles.onlineLink} href="/ingressos" target="_blank" rel="noopener noreferrer">
+              Abrir página pública <ExternalLink size={14} aria-hidden="true" />
+            </a>
+          </div>
+          <p className={styles.onlineHint}>
+            Aparecem na página pública as sessões à venda de produções marcadas como públicas (editar produção).
+          </p>
+          {orders.length === 0 ? (
+            <p className={styles.onlineEmpty}>Nenhum pedido online ainda.</p>
+          ) : (
+            <div className={styles.tableWrap}>
+              <table className={styles.ordersTable}>
+                <thead>
+                  <tr><th>Data</th><th>Comprador</th><th>Sessão</th><th>Qtd.</th><th>Total</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  {orders.slice(0, 20).map((o) => {
+                    const b = batches.find((x) => x.id === o.batch_id)
+                    return (
+                      <tr key={o.id}>
+                        <td>{format(new Date(o.created_at), 'dd/MM HH:mm')}</td>
+                        <td>{o.buyer_name}<span className={styles.cellSub}>{o.buyer_email}</span></td>
+                        <td>{b ? `${prodOf(b)?.title ?? ''} · ${format(new Date(b.performance_date), 'dd/MM HH:mm')}` : '—'}</td>
+                        <td>{o.quantity}</td>
+                        <td>{fmtBRL(o.total_amount)}</td>
+                        <td><StatusBadge status={o.status} /></td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
 
       <BatchModal open={!!batchModal} batch={batchModal === 'new' ? null : batchModal}
         productions={productions} onClose={() => setBatchModal(null)} />

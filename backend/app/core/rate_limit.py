@@ -94,3 +94,27 @@ def reset_all() -> None:
     """Usado pelos testes."""
     with _lock:
         _memory.clear()
+
+
+# ── Limite genérico por janela (ex.: pedidos públicos por IP) ────────────────
+def hit(bucket: str, identifier: str, limit: int, window: int) -> bool:
+    """Conta uma tentativa. Devolve False quando o limite da janela já foi atingido."""
+    key = f"curtain:{bucket}:{identifier}"
+    r = _get_redis()
+    if r is not None:
+        try:
+            count = int(r.incr(key))
+            if count == 1:
+                r.expire(key, window)
+            return count <= limit
+        except Exception:
+            pass
+    now = time.monotonic()
+    with _lock:
+        hits = [t for t in _memory.get(key, []) if now - t < window]
+        if len(hits) >= limit:
+            _memory[key] = hits
+            return False
+        hits.append(now)
+        _memory[key] = hits
+        return True

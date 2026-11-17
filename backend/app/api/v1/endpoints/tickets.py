@@ -13,6 +13,9 @@ from app.schemas.ticket import (
     CheckInRequest, CheckInResult, TicketBatchCreate, TicketBatchResponse, TicketBatchUpdate,
     TicketCreate, TicketResponse, TicketSalesSummary,
 )
+from app.models.order import OrderStatus
+from app.schemas.order import OrderAdmin
+from app.services.order_service import OrderService
 from app.services.ticket_service import TicketError, TicketService
 
 router = APIRouter()
@@ -92,6 +95,16 @@ def sales_summary(
     current_user: User = Depends(require_roles(*TICKETS_CHECKIN)),
 ):
     return TicketService(db).summary(production_id)
+
+
+@router.get("/orders", response_model=List[OrderAdmin])
+def list_online_orders(
+    order_status: Optional[OrderStatus] = Query(None, alias="status"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(*TICKETS_MANAGE)),
+):
+    """Pedidos da venda online (fase 8), mais recentes primeiro."""
+    return OrderService(db).list_orders(order_status)
 
 
 # ── Ingressos ─────────────────────────────────────────────────────────────────
