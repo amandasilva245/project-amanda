@@ -98,7 +98,10 @@ def update_production(
     if not production:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Production not found")
 
-    updated = service.update(production, payload)
+    try:
+        updated = service.update(production, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return ProductionResponse.model_validate(updated)
 
 
@@ -127,9 +130,32 @@ def add_participant(
     if not production:
         raise HTTPException(status_code=404, detail="Production not found")
 
-    participant = service.add_participant(production, payload)
+    try:
+        participant = service.add_participant(production, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     db.refresh(participant)
     db.refresh(participant.user)
+    return ParticipantResponse.model_validate(participant)
+
+
+@router.patch("/{production_id}/participants/{participant_id}", response_model=ParticipantResponse)
+def update_participant(
+    production_id: str,
+    participant_id: str,
+    payload: ParticipantUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(*WRITE_ROLES)),
+):
+    """Edita função, personagem, cachê, valor pago e as marcações principal/confirmado (RF13)."""
+    service = ProductionService(db)
+    participant = service.get_participant(participant_id, production_id)
+    if not participant:
+        raise HTTPException(status_code=404, detail="Participant not found")
+    try:
+        participant = service.update_participant(participant, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return ParticipantResponse.model_validate(participant)
 
 

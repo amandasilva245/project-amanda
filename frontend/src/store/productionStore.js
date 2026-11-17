@@ -48,19 +48,68 @@ export const useProductionStore = create((set, get) => ({
     }
   },
 
+  // Sem "loading" global: a página de detalhe não deve piscar o spinner ao salvar
   updateProduction: async (id, data) => {
-    set({ loading: true, error: null })
+    set({ error: null })
     try {
       const res = await api.patch(`/api/v1/productions/${id}`, stripEmpty(data))
       set((s) => ({
         productions: s.productions.map((p) => p.id === id ? res.data : p),
-        currentProduction: s.currentProduction?.id === id ? res.data : s.currentProduction,
-        loading: false,
+        // PATCH devolve a produção sem participantes: preserva os que já temos
+        currentProduction: s.currentProduction?.id === id
+          ? { ...s.currentProduction, ...res.data, participants: s.currentProduction.participants }
+          : s.currentProduction,
       }))
       return res.data
     } catch (err) {
-      set({ error: getErrorMessage(err), loading: false })
+      set({ error: getErrorMessage(err) })
       return null
+    }
+  },
+
+  deleteProduction: async (id) => {
+    try {
+      await api.delete(`/api/v1/productions/${id}`)
+      set((s) => ({
+        productions: s.productions.filter((p) => p.id !== id),
+        currentProduction: s.currentProduction?.id === id ? null : s.currentProduction,
+      }))
+      return true
+    } catch (err) {
+      set({ error: getErrorMessage(err) })
+      return false
+    }
+  },
+
+  // Recarrega o detalhe sem acionar o spinner de página inteira
+  refreshCurrent: async () => {
+    const id = get().currentProduction?.id
+    if (!id) return
+    try {
+      const res = await api.get(`/api/v1/productions/${id}`)
+      set({ currentProduction: res.data })
+    } catch { /* mantém o que já está na tela */ }
+  },
+
+  updateParticipant: async (productionId, participantId, data) => {
+    try {
+      await api.patch(`/api/v1/productions/${productionId}/participants/${participantId}`, data)
+      await get().refreshCurrent()
+      return true
+    } catch (err) {
+      set({ error: getErrorMessage(err) })
+      return false
+    }
+  },
+
+  removeParticipant: async (productionId, participantId) => {
+    try {
+      await api.delete(`/api/v1/productions/${productionId}/participants/${participantId}`)
+      await get().refreshCurrent()
+      return true
+    } catch (err) {
+      set({ error: getErrorMessage(err) })
+      return false
     }
   },
 

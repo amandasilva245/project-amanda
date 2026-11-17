@@ -2,19 +2,26 @@ import { clsx } from 'clsx'
 import styles from './Badge.module.css'
 
 const STATUS_CONFIG = {
-  development:    { label: 'Development',    variant: 'neutral' },
-  pre_production: { label: 'Pre-Production', variant: 'iris' },
-  rehearsal:      { label: 'Rehearsal',      variant: 'warning' },
-  performance:    { label: 'Performance',    variant: 'success' },
-  archived:       { label: 'Archived',       variant: 'muted' },
-  // transaction types
-  income:  { label: 'Income',  variant: 'success' },
-  expense: { label: 'Expense', variant: 'error' },
-  // ticket
-  confirmed: { label: 'Confirmed', variant: 'success' },
-  reserved:  { label: 'Reserved',  variant: 'warning' },
-  cancelled: { label: 'Cancelled', variant: 'error' },
-  used:      { label: 'Used',      variant: 'muted' },
+  development:    { label: 'Desenvolvimento', variant: 'neutral' },
+  pre_production: { label: 'Pré-produção',    variant: 'iris' },
+  rehearsal:      { label: 'Ensaios',         variant: 'warning' },
+  performance:    { label: 'Em cartaz',       variant: 'success' },
+  archived:       { label: 'Arquivada',       variant: 'muted' },
+  // transações
+  income:  { label: 'Receita', variant: 'success' },
+  expense: { label: 'Despesa', variant: 'error' },
+  // ingressos
+  confirmed: { label: 'Confirmado', variant: 'success' },
+  reserved:  { label: 'Reservado',  variant: 'warning' },
+  cancelled: { label: 'Cancelado',  variant: 'error' },
+  used:      { label: 'Utilizado',  variant: 'muted' },
+  // lotes
+  on_sale:   { label: 'À venda',    variant: 'success' },
+  sold_out:  { label: 'Esgotado',   variant: 'warning' },
+  completed: { label: 'Concluído',  variant: 'muted' },
+  // presença na agenda
+  invited:   { label: 'Convidado',  variant: 'neutral' },
+  absent:    { label: 'Ausente',    variant: 'error' },
 }
 
 export function StatusBadge({ status, className }) {

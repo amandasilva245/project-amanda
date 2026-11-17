@@ -8,9 +8,10 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import { StatusBadge } from '@/components/ui/Badge'
 import ProductionTimeline from '@/components/modules/ProductionTimeline'
-import Modal from '@/components/ui/Modal'
+import ProductionFormModal from '@/components/modules/ProductionFormModal'
 import { Flourish } from '@/components/ui/Ornament'
 import { parseDate } from '@/utils/helpers'
+import { can } from '@/utils/permissions'
 import styles from './Productions.module.css'
 
 const STATUS_FILTERS = [
@@ -22,8 +23,6 @@ const STATUS_FILTERS = [
   { label: 'Arquivadas',     value: 'archived' },
 ]
 
-const WRITE_ROLES = ['admin', 'producer', 'director']
-
 export default function Productions() {
   const { user } = useAuthStore()
   const { productions, fetchProductions, createProduction, loading, error, clearError } = useProductionStore()
@@ -33,8 +32,6 @@ export default function Productions() {
   const [statusFilter, setStatus] = useState('')
   const [view, setView]           = useState('grid')
   const [showCreate, setCreate]   = useState(false)
-  const [form, setForm]           = useState({ title: '', playwright: '', venue: '', status: 'development' })
-  const [formError, setFormError] = useState(null)
 
   // Debounce search input — avoids API call on every keystroke
   useEffect(() => {
@@ -46,24 +43,15 @@ export default function Productions() {
     fetchProductions({ status: statusFilter || undefined, search: debouncedSearch || undefined })
   }, [statusFilter, debouncedSearch])
 
-  const canCreate = WRITE_ROLES.includes(user?.role)
+  const canCreate = can(user, 'PRODUCTION_WRITE')
 
-  const handleCreate = async (e) => {
-    e.preventDefault()
-    setFormError(null)
-    if (!form.title.trim()) { setFormError('Título é obrigatório.'); return }
-    const result = await createProduction(form)
-    if (result) {
-      // Success — close and reset
-      setCreate(false)
-      setForm({ title: '', playwright: '', venue: '', status: 'development' })
-    } else {
-      // Failure — keep modal open, show error from store
-      setFormError(useProductionStore.getState().error ?? 'Erro ao criar produção. Verifique suas permissões.')
-    }
+  const handleCreate = async (data) => {
+    const result = await createProduction(data)
+    if (result) { setCreate(false); return true }
+    return useProductionStore.getState().error ?? 'Erro ao criar produção. Verifique suas permissões.'
   }
 
-  const openCreate = () => { clearError(); setFormError(null); setCreate(true) }
+  const openCreate = () => { clearError(); setCreate(true) }
 
   return (
     <div className={styles.page}>
@@ -189,71 +177,12 @@ export default function Productions() {
       )}
 
       {/* Create Modal */}
-      <Modal
+      <ProductionFormModal
         open={showCreate}
-        onClose={() => { setCreate(false); setFormError(null) }}
-        title="Nova Produção"
-        description="Inicie uma nova jornada teatral."
-        size="md"
-      >
-        <form onSubmit={handleCreate} className={styles.modalForm}>
-          <Input
-            label="Título *"
-            placeholder="ex: Romeu e Julieta"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            error={formError && !form.title.trim() ? formError : undefined}
-            autoFocus
-          />
-          <div className={styles.formRow}>
-            <Input
-              label="Dramaturgo / Autor"
-              placeholder="Nome do autor"
-              value={form.playwright}
-              onChange={(e) => setForm({ ...form, playwright: e.target.value })}
-            />
-            <Input
-              label="Local / Teatro"
-              placeholder="Nome do teatro"
-              value={form.venue}
-              onChange={(e) => setForm({ ...form, venue: e.target.value })}
-            />
-          </div>
-          <div className={styles.formRow}>
-            <Input
-              label="Data de Início"
-              type="date"
-              value={form.start_date ?? ''}
-              onChange={(e) => setForm({ ...form, start_date: e.target.value })}
-            />
-            <Input
-              label="Data de Encerramento"
-              type="date"
-              value={form.end_date ?? ''}
-              onChange={(e) => setForm({ ...form, end_date: e.target.value })}
-            />
-          </div>
-
-          {formError && (
-            <motion.p
-              className={styles.formError}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              {formError}
-            </motion.p>
-          )}
-
-          <div className={styles.modalActions}>
-            <Button variant="ghost" type="button" onClick={() => { setCreate(false); setFormError(null) }}>
-              Cancelar
-            </Button>
-            <Button variant="primary" type="submit" loading={loading}>
-              Criar Produção
-            </Button>
-          </div>
-        </form>
-      </Modal>
+        onClose={() => setCreate(false)}
+        onSubmit={handleCreate}
+        loading={loading}
+      />
     </div>
   )
 }

@@ -121,8 +121,9 @@ class InsightService:
             .scalar()
         )
 
+        # Pessoas distintas: quem acumula funções conta uma vez só
         total_cast = (
-            self.db.query(func.count(ProductionParticipant.id)).scalar()
+            self.db.query(func.count(func.distinct(ProductionParticipant.user_id))).scalar()
         )
 
         ticket_revenue = (
