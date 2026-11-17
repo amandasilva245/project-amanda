@@ -2,7 +2,8 @@
 """Aplica as migrações Alembic de forma segura (sem recriar nada).
 
 * Banco vazio: `alembic upgrade head` cria tudo.
-* Banco criado antes das migrações (via create_all): é marcado como 0001
+* Banco criado antes das migrações (via create_all), com ou sem uma tabela
+  alembic_version vazia: é marcado como 0001
   (`stamp`), que corresponde exatamente ao schema antigo, e só então as
   migrações seguintes são aplicadas. Nenhuma tabela é apagada.
 * Um advisory lock do PostgreSQL impede que duas réplicas migrem ao mesmo
@@ -33,7 +34,12 @@ def migrate() -> None:
         conn.execute(text("SELECT pg_advisory_lock(:id)"), {"id": LOCK_ID})
         try:
             tables = set(inspect(conn).get_table_names())
-            if "users" in tables and "alembic_version" not in tables:
+            versioned = False
+            if "alembic_version" in tables:
+                # A versão antiga do projeto já tinha o Alembic configurado sem
+                # nenhuma migração: a tabela pode existir, porém vazia.
+                versioned = conn.execute(text("SELECT count(*) FROM alembic_version")).scalar() > 0
+            if "users" in tables and not versioned:
                 print("• Banco anterior às migrações detectado: marcando como 0001 (sem alterações).")
                 command.stamp(cfg, "0001")
             command.upgrade(cfg, "head")
