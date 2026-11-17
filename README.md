@@ -30,7 +30,7 @@ Aguarde cerca de 30 segundos para o banco inicializar. Depois acesse:
 |---|---|
 | http://localhost | Interface principal (via nginx) |
 | http://localhost:5173 | Frontend direto |
-| http://localhost:8000/docs | Documentação da API (Swagger UI) |
+| http://localhost:8000/api/docs | Documentação da API (Swagger UI; disponível quando `ENVIRONMENT` não é `production`) |
 
 ### Parar o sistema
 
@@ -53,11 +53,16 @@ docker compose up -d frontend nginx
 
 ## Credenciais de Acesso
 
+Na primeira subida, o `init_db.py` cria o administrador inicial:
+
 | Campo | Valor |
 |---|---|
-| E-mail | `admin@curtain.app` |
-| Senha | `Admin@2026` |
+| E-mail | `ADMIN_EMAIL` do `.env` (padrão `admin@curtain.app`) |
+| Senha | `ADMIN_PASSWORD` do `.env`; se vazio, uma senha forte é gerada e gravada em `backend/.admin-initial-password` |
 | Papel | Administrador |
+
+Depois do primeiro login, troque a senha em **Configurações** e apague o arquivo `.admin-initial-password`.
+Bancos que já tinham um administrador não são alterados.
 
 ---
 
@@ -125,23 +130,37 @@ docker compose down
 docker volume rm projectamanda_postgres_data
 docker compose up -d
 
-# Criar usuário admin manualmente (após resetar banco)
-docker compose exec backend python -c "
-from app.db.session import SessionLocal
-from app.models.user import User
-import bcrypt
-db = SessionLocal()
-pw = bcrypt.hashpw(b'Admin@2026', bcrypt.gensalt(12)).decode()
-u = User(email='admin@curtain.app', full_name='Admin', hashed_password=pw, role='admin', is_active=True)
-db.add(u); db.commit()
-print('Admin criado')
-"
+# Aplicar migrações e criar o admin inicial (idempotente, não apaga dados)
+docker compose exec backend python init_db.py
+
+# Só as migrações
+docker compose exec backend python migrate.py
 
 # Acessar o banco PostgreSQL
 docker compose exec db psql -U curtain_user -d curtain_db
 ```
 
 ---
+
+## Testes e Migrações
+
+### Testes do backend (pytest)
+
+Os testes usam um banco **separado**, cujo nome precisa terminar em `test`
+(todas as tabelas dele são esvaziadas entre os testes):
+
+```bash
+docker compose exec db createdb -U curtain_user curtain_test
+docker compose exec -e TEST_DATABASE_URL=postgresql://curtain_user:${DB_PASSWORD}@db:5432/curtain_test \
+  backend sh -c "pip install -q -r requirements-dev.txt && pytest"
+```
+
+### Migrações (Alembic)
+
+- `python migrate.py` aplica as migrações pendentes. Um banco criado antes das
+  migrações é reconhecido e marcado como `0001` sem nenhuma alteração.
+- Nova migração depois de mudar um modelo: `alembic revision --autogenerate -m "descrição"`.
+- Desfazer a última: `alembic downgrade -1`.
 
 ## Stack Tecnológica
 

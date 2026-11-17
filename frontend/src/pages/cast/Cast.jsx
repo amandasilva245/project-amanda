@@ -1,8 +1,11 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Search, UserPlus, Users, Theater, Mail, Phone } from 'lucide-react'
 import { useCastStore } from '@/store/castStore'
 import { useProductionStore } from '@/store/productionStore'
+import { useAuthStore } from '@/store/authStore'
+import { passwordProblem } from '@/utils/helpers'
 import Avatar from '@/components/ui/Avatar'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -45,6 +48,10 @@ const emptyAssign = {
 export default function Cast() {
   const { members, loading, error, fetchMembers, createMember, assignToProduction, clearError } = useCastStore()
   const { productions, fetchProductions } = useProductionStore()
+  // Cadastrar pessoas é exclusivo do admin na API (POST /auth/users)
+  const isAdmin = useAuthStore((s) => s.user?.role === 'admin')
+  // Pessoa já criada quando o vínculo à produção falha: evita recriá-la (409)
+  const [createdMember, setCreatedMember] = useState(null)
 
   const [search, setSearch]       = useState('')
   const [activeTab, setActiveTab] = useState('people')
@@ -55,9 +62,9 @@ export default function Cast() {
   const [formError, setFormError] = useState(null)
 
   useEffect(() => {
-    fetchMembers()
+    fetchMembers({ full: isAdmin })
     fetchProductions()
-  }, [])
+  }, [isAdmin])
 
   const filtered = members.filter((m) =>
     !search ||
@@ -71,6 +78,7 @@ export default function Cast() {
     setForm(emptyForm)
     setAssign(emptyAssign)
     setFormError(null)
+    setCreatedMember(null)
     clearError()
   }
 
@@ -81,13 +89,15 @@ export default function Cast() {
     if (step === 1) {
       if (!form.full_name.trim()) { setFormError('Nome completo é obrigatório.'); return }
       if (!form.email.trim())     { setFormError('E-mail é obrigatório.'); return }
-      if (!form.password.trim())  { setFormError('Senha é obrigatória.'); return }
+      if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) { setFormError('Informe um e-mail válido.'); return }
+      const pwdErr = passwordProblem(form.password)
+      if (pwdErr) { setFormError(pwdErr); return }
       setStep(2)
       return
     }
 
     // Step 2: create member, then optionally assign
-    const member = await createMember({
+    const member = createdMember ?? await createMember({
       full_name: form.full_name,
       email:     form.email,
       password:  form.password,
@@ -97,17 +107,30 @@ export default function Cast() {
     })
 
     if (!member) {
-      setFormError(error ?? 'Erro ao cadastrar. Verifique os dados.')
+      setFormError(useCastStore.getState().error ?? 'Erro ao cadastrar. Verifique os dados.')
+      return
+    }
+    setCreatedMember(member)
+
+    if (assign.production_id && !assign.role_title.trim()) {
+      setFormError('Informe a função na produção ou deixe "Não vincular agora".')
       return
     }
 
     if (assign.production_id && assign.role_title.trim()) {
-      await assignToProduction(assign.production_id, {
+      const ok = await assignToProduction(assign.production_id, {
         user_id:        member.id,
         role_title:     assign.role_title,
         department:     assign.department,
         character_name: assign.character_name || undefined,
       })
+      if (!ok) {
+        setFormError(
+          `${member.full_name} foi cadastrado(a), mas o vínculo à produção falhou: ` +
+          (useCastStore.getState().error ?? 'tente novamente.')
+        )
+        return
+      }
     }
 
     resetAndClose()
@@ -132,9 +155,11 @@ export default function Cast() {
           {activeTab === 'people' && (
             <p className={styles.count}>{filtered.length} pessoa{filtered.length !== 1 ? 's' : ''}</p>
           )}
-          <Button variant="primary" leftIcon={UserPlus} onClick={() => { resetAndClose(); setShowAdd(true) }}>
-            Adicionar Pessoa
-          </Button>
+          {isAdmin && (
+            <Button variant="primary" leftIcon={UserPlus} onClick={() => { resetAndClose(); setShowAdd(true) }}>
+              Adicionar Pessoa
+            </Button>
+          )}
         </div>
       </div>
 
@@ -215,9 +240,11 @@ export default function Cast() {
             <div className={styles.empty}>
               <Users size={32} strokeWidth={1} style={{ color: 'var(--text-disabled)' }} />
               <p className={styles.emptyTitle}>
-                {search ? 'Nenhuma pessoa encontrada.' : 'Nenhum membro cadastrado ainda.'}
+                {error
+                  ? error
+                  : search ? 'Nenhuma pessoa encontrada.' : 'Nenhum membro cadastrado ainda.'}
               </p>
-              {!search && (
+              {!search && !error && isAdmin && (
                 <Button variant="outline" leftIcon={UserPlus} onClick={() => { resetAndClose(); setShowAdd(true) }}>
                   Adicionar Primeiro Membro
                 </Button>
@@ -255,12 +282,12 @@ export default function Cast() {
                 </div>
                 <div className={styles.prodGroupFooter}>
                   {prod.venue && <span className={styles.prodGroupVenue}>{prod.venue}</span>}
-                  <a
-                    href={`/productions/${prod.id}`}
+                  <Link
+                    to={`/productions/${prod.id}`}
                     className={styles.prodGroupLink}
                   >
                     Ver elenco completo →
-                  </a>
+                  </Link>
                 </div>
               </motion.div>
             ))}
@@ -370,7 +397,7 @@ export default function Cast() {
                   value={assign.production_id}
                   onChange={(e) => setAssign({ ...assign, production_id: e.target.value })}
                 >
-                  <option value="">â€” Não vincular agora â€”</option>
+                  <option value="">— Não vincular agora —</option>
                   {productions.map((p) => (
                     <option key={p.id} value={p.id}>{p.title}</option>
                   ))}

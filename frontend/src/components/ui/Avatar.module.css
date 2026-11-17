@@ -2,8 +2,8 @@
   width: var(--sz);
   height: var(--sz);
   border-radius: 50%;
-  background: var(--spotlight-glow);
-  border: 1.5px solid rgba(223,168,67,0.25);
+  background: radial-gradient(circle at 35% 30%, var(--wine-light), var(--wine-deep));
+  border: 1px solid rgba(169,135,74,0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,9 +18,9 @@
 }
 
 .initials {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-weight: var(--weight-semibold);
-  color: var(--spotlight-text);
+  color: var(--champagne);
   user-select: none;
 }
 

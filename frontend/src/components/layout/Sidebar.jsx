@@ -1,9 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, Theater, Users, DollarSign,
-  Ticket, BarChart3, Settings, LogOut, ChevronRight,
+  Ticket, BarChart3, Settings, LogOut, ChevronRight, CalendarDays,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
+import { ROLES } from '@/utils/permissions'
+import { Crest, Flourish } from '@/components/ui/Ornament'
 import styles from './Sidebar.module.css'
 
 const NAV_SECTIONS = [
@@ -18,22 +20,23 @@ const NAV_SECTIONS = [
     label: 'Stage',
     items: [
       { to: '/productions', icon: Theater, label: 'Productions' },
+      { to: '/agenda', icon: CalendarDays, label: 'Agenda' },
     ],
   },
   {
     id: 'company',
     label: 'Company',
     items: [
-      { to: '/cast', icon: Users, label: 'Cast & Crew' },
+      { to: '/cast', icon: Users, label: 'Cast & Crew', roles: ROLES.PEOPLE_DIRECTORY },
     ],
   },
   {
     id: 'business',
     label: 'Business',
     items: [
-      { to: '/finance', icon: DollarSign, label: 'Financeiro', roles: ['admin', 'producer', 'financial_manager'] },
-      { to: '/tickets', icon: Ticket, label: 'Tickets' },
-      { to: '/insights', icon: BarChart3, label: 'Insights', roles: ['admin', 'producer', 'financial_manager', 'director'] },
+      { to: '/finance', icon: DollarSign, label: 'Financeiro', roles: ROLES.FINANCE_GLOBAL },
+      { to: '/tickets', icon: Ticket, label: 'Bilheteria', roles: ROLES.TICKETS_CHECKIN },
+      { to: '/insights', icon: BarChart3, label: 'Insights', roles: ROLES.INSIGHTS },
     ],
   },
 ]
@@ -72,13 +75,15 @@ export default function Sidebar() {
       {/* Logo */}
       <div className={styles.logo}>
         <div className={styles.logoMark}>
-          <span className={styles.logoSymbol}>◎</span>
+          <Crest size={34} className={styles.logoSymbol} />
         </div>
         <div className={styles.logoText}>
           <span className={styles.logoName}>Curtain</span>
           <span className={styles.logoTagline}>Operations</span>
         </div>
       </div>
+
+      <Flourish width={150} className={styles.logoFlourish} />
 
       {/* Navigation */}
       <nav className={styles.nav}>

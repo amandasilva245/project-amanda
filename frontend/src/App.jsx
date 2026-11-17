@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { MotionConfig } from 'framer-motion'
 import { useAuthStore } from '@/store/authStore'
 import AppShell from '@/components/layout/AppShell'
 import PageTransition from '@/components/layout/PageTransition'
@@ -12,15 +13,26 @@ import Finance from '@/pages/finance/Finance'
 import Tickets from '@/pages/tickets/Tickets'
 import Insights from '@/pages/insights/Insights'
 import Settings from '@/pages/settings/Settings'
+import Agenda from '@/pages/agenda/Agenda'
+import { can } from '@/utils/permissions'
 
 function ProtectedRoute({ children }) {
-  const { user } = useAuthStore()
+  const { user, initializing } = useAuthStore()
+  if (initializing) return null // aguarda /auth/me antes de decidir
   if (!user) return <Navigate to="/login" replace />
   return children
 }
 
+// Página restrita a alguns papéis: quem não pode é levado ao painel.
+function RoleRoute({ permission, children }) {
+  const user = useAuthStore((s) => s.user)
+  if (!can(user, permission)) return <Navigate to="/" replace />
+  return children
+}
+
 function PublicRoute({ children }) {
-  const { user } = useAuthStore()
+  const { user, initializing } = useAuthStore()
+  if (initializing) return null
   if (user) return <Navigate to="/" replace />
   return children
 }
@@ -30,6 +42,8 @@ export default function App() {
   useEffect(() => { initFromStorage() }, [])
 
   return (
+    // reducedMotion="user": respeita a preferência "reduzir movimento" do sistema
+    <MotionConfig reducedMotion="user">
     <BrowserRouter>
       <Routes>
         <Route
@@ -51,13 +65,15 @@ export default function App() {
           <Route index element={<PageTransition><Dashboard /></PageTransition>} />
           <Route path="productions" element={<PageTransition><Productions /></PageTransition>} />
           <Route path="productions/:id" element={<PageTransition><ProductionDetail /></PageTransition>} />
-          <Route path="cast" element={<PageTransition><Cast /></PageTransition>} />
-          <Route path="finance" element={<PageTransition><Finance /></PageTransition>} />
-          <Route path="tickets" element={<PageTransition><Tickets /></PageTransition>} />
-          <Route path="insights"  element={<PageTransition><Insights /></PageTransition>} />
+          <Route path="agenda" element={<PageTransition><Agenda /></PageTransition>} />
+          <Route path="cast" element={<RoleRoute permission="PEOPLE_DIRECTORY"><PageTransition><Cast /></PageTransition></RoleRoute>} />
+          <Route path="finance" element={<RoleRoute permission="FINANCE_GLOBAL"><PageTransition><Finance /></PageTransition></RoleRoute>} />
+          <Route path="tickets" element={<RoleRoute permission="TICKETS_CHECKIN"><PageTransition><Tickets /></PageTransition></RoleRoute>} />
+          <Route path="insights" element={<RoleRoute permission="INSIGHTS"><PageTransition><Insights /></PageTransition></RoleRoute>} />
           <Route path="settings" element={<PageTransition><Settings /></PageTransition>} />
         </Route>
       </Routes>
     </BrowserRouter>
+    </MotionConfig>
   )
 }

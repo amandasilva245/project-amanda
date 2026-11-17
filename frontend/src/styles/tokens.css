@@ -1,66 +1,91 @@
 /* ═══════════════════════════════════════════════════════════
-   CURTAIN DESIGN TOKENS
-   The Stage as a System — Visual Language Foundation
+   CURTAIN DESIGN TOKENS — ROYALCORE
+   Teatro histórico europeu: café profundo, vinho, ouro velho,
+   champagne e marfim.
+
+   Os nomes antigos (--stage, --spotlight, --iris…) foram mantidos
+   como aliases para que todas as páginas herdem a nova paleta sem
+   alterações em JSX nem em lógica.
    ═══════════════════════════════════════════════════════════ */
 
 :root {
 
-  /* ── Backgrounds (Stage Layers) ─────────────────────────── */
-  --void:     #05050A;   /* Deepest — outer darkness            */
-  --stage:    #0B0B10;   /* Main canvas — the stage floor       */
-  --wing:     #111118;   /* Surface — offstage wing             */
-  --backdrop: #18181F;   /* Elevated surface — backdrop         */
-  --flat:     #1F1F28;   /* Highest surface — set piece         */
-  --scrim:    #252530;   /* Borders, dividers — translucent     */
+  /* ── Paleta base Royalcore ──────────────────────────────── */
+  --cafe:        #271911;   /* Marrom café profundo           */
+  --cafe-deep:   #1F150E;
+  --cafe-abyss:  #150D08;
+  --wine:        #541D24;   /* Vinho escuro (veludo)          */
+  --wine-deep:   #3A1218;
+  --wine-light:  #7A2E37;
+  --gold:        #A9874A;   /* Ouro envelhecido               */
+  --gold-bright: #C9A86A;
+  --gold-pale:   #DCC393;
+  --gold-deep:   #8A6B36;
+  --champagne:   #E6D5B9;
+  --ivory:       #F7F0E4;
+  --gold-rgb:    169, 135, 74;
+  --wine-rgb:    84, 29, 36;
 
-  /* ── Spotlight (Primary Accent) ─────────────────────────── */
-  --spotlight:      #DFA843;
-  --spotlight-dim:  #B8892F;
-  --spotlight-mute: #8A6522;
-  --spotlight-glow: rgba(223, 168, 67, 0.12);
-  --spotlight-text: #F5C96A;
+  /* ── Backgrounds (camadas do palco) ─────────────────────── */
+  --void:     var(--cafe-abyss);  /* Menu lateral / fundo externo */
+  --stage:    var(--cafe-deep);   /* Tela principal               */
+  --wing:     var(--cafe);        /* Superfície (cards)           */
+  --backdrop: #301F15;            /* Superfície elevada (modais)  */
+  --flat:     #3B281B;            /* Superfície mais alta         */
+  --scrim:    #4C3524;            /* Trilhos, divisórias sólidas  */
+  --field:    #1A110B;            /* Fundo de campos de formulário*/
 
-  /* ── Iris (Secondary Accent) ────────────────────────────── */
-  --iris:      #7C5CBF;
-  --iris-dim:  #6448A6;
-  --iris-glow: rgba(124, 92, 191, 0.12);
+  /* ── Spotlight → Ouro (acento principal) ───────────────── */
+  --spotlight:      var(--gold);
+  --spotlight-dim:  var(--gold-deep);
+  --spotlight-mute: #6E5530;
+  --spotlight-glow: rgba(169, 135, 74, 0.16);
+  --spotlight-text: var(--gold-bright);
 
-  /* ── Text ───────────────────────────────────────────────── */
-  --text-primary:   #F0EDE8;
-  --text-secondary: #A8A49E;
-  --text-muted:     #6B6865;
-  --text-disabled:  #3D3C3A;
-  --text-inverse:   #0B0B10;
+  /* ── Iris → Vinho/rosé (acento secundário) ─────────────── */
+  --iris:      #C98A93;
+  --iris-dim:  var(--wine-light);
+  --iris-glow: rgba(201, 138, 147, 0.12);
 
-  /* ── Borders ────────────────────────────────────────────── */
-  --border-subtle:  rgba(255, 255, 255, 0.05);
-  --border-default: rgba(255, 255, 255, 0.09);
-  --border-strong:  rgba(255, 255, 255, 0.14);
-  --border-focus:   var(--spotlight);
+  /* ── Texto ──────────────────────────────────────────────── */
+  --text-primary:   var(--ivory);
+  --text-secondary: #D5C3A5;
+  --text-muted:     #A38F75;   /* ≥ 5:1 sobre --stage           */
+  --text-disabled:  #6E5C4A;
+  --text-inverse:   var(--cafe-deep);
 
-  /* ── Semantic Colours ───────────────────────────────────── */
-  --success:    #3ECF8E;
-  --success-bg: rgba(62, 207, 142, 0.10);
-  --warning:    #F59E0B;
-  --warning-bg: rgba(245, 158, 11, 0.10);
-  --error:      #F36A6A;
-  --error-bg:   rgba(243, 106, 106, 0.10);
-  --info:       #60A5FA;
-  --info-bg:    rgba(96, 165, 250, 0.10);
+  /* ── Bordas (filetes dourados) ─────────────────────────── */
+  --border-subtle:  rgba(169, 135, 74, 0.14);
+  --border-default: rgba(169, 135, 74, 0.24);
+  --border-strong:  rgba(169, 135, 74, 0.40);
+  --border-focus:   var(--gold-bright);
 
-  /* Production Status Colors */
-  --status-development:    #6B7280;
-  --status-pre-production: #8B5CF6;
-  --status-rehearsal:      #F59E0B;
-  --status-performance:    #3ECF8E;
-  --status-archived:       #4B5563;
+  /* ── Cores semânticas (tons clássicos, sem neon) ───────── */
+  --success:    #9DBE8A;
+  --success-bg: rgba(157, 190, 138, 0.10);
+  --warning:    #DDAA5E;
+  --warning-bg: rgba(221, 170, 94, 0.11);
+  --error:      #E07F88;
+  --error-bg:   rgba(224, 127, 136, 0.10);
+  --info:       #9DB4C0;
+  --info-bg:    rgba(157, 180, 192, 0.10);
 
-  /* ── Typography ─────────────────────────────────────────── */
-  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
-  --font-sans:    'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+  /* Status das produções */
+  --status-development:    #A08E7A;
+  --status-pre-production: #C98A93;
+  --status-rehearsal:      #DDAA5E;
+  --status-performance:    #9DBE8A;
+  --status-archived:       #6E5C4A;
+
+  /* ── Tipografia ─────────────────────────────────────────── */
+  /* Cinzel: capitulares e rótulos; Cormorant: títulos editoriais;
+     Inter: tabelas, formulários e dados operacionais.            */
+  --font-heading: 'Cinzel', 'Trajan Pro', Georgia, serif;
+  --font-display: 'Cormorant Garamond', 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans:    'Inter', 'SF Pro Text', system-ui, -apple-system, sans-serif;
   --font-mono:    'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
-  /* Type Scale */
+  /* Escala */
   --text-2xs: 0.6875rem;  /*  11px */
   --text-xs:  0.75rem;    /*  12px */
   --text-sm:  0.875rem;   /*  14px */
@@ -73,83 +98,102 @@
   --text-5xl: 3rem;       /*  48px */
   --text-6xl: 3.75rem;    /*  60px */
 
-  /* Line Heights */
   --leading-tight:   1.2;
   --leading-snug:    1.35;
   --leading-normal:  1.5;
   --leading-relaxed: 1.65;
 
-  /* Letter Spacing */
-  --tracking-tighter: -0.03em;
-  --tracking-tight:   -0.015em;
+  --tracking-tighter: -0.02em;
+  --tracking-tight:   -0.005em;
   --tracking-normal:   0em;
-  --tracking-wide:     0.04em;
-  --tracking-wider:    0.08em;
-  --tracking-widest:   0.12em;
+  --tracking-wide:     0.05em;
+  --tracking-wider:    0.1em;
+  --tracking-widest:   0.18em;
 
-  /* Font Weights */
   --weight-light:    300;
   --weight-regular:  400;
   --weight-medium:   500;
   --weight-semibold: 600;
   --weight-bold:     700;
 
-  /* ── Spacing (4px base unit) ────────────────────────────── */
+  /* ── Espaçamento (base 4px) ────────────────────────────── */
   --sp-px:  1px;
-  --sp-0-5: 0.125rem;  /*   2px */
-  --sp-1:   0.25rem;   /*   4px */
-  --sp-1-5: 0.375rem;  /*   6px */
-  --sp-2:   0.5rem;    /*   8px */
-  --sp-2-5: 0.625rem;  /*  10px */
-  --sp-3:   0.75rem;   /*  12px */
-  --sp-4:   1rem;      /*  16px */
-  --sp-5:   1.25rem;   /*  20px */
-  --sp-6:   1.5rem;    /*  24px */
-  --sp-7:   1.75rem;   /*  28px */
-  --sp-8:   2rem;      /*  32px */
-  --sp-9:   2.25rem;   /*  36px */
-  --sp-10:  2.5rem;    /*  40px */
-  --sp-12:  3rem;      /*  48px */
-  --sp-14:  3.5rem;    /*  56px */
-  --sp-16:  4rem;      /*  64px */
-  --sp-20:  5rem;      /*  80px */
-  --sp-24:  6rem;      /*  96px */
-  --sp-32:  8rem;      /* 128px */
+  --sp-0-5: 0.125rem;
+  --sp-1:   0.25rem;
+  --sp-1-5: 0.375rem;
+  --sp-2:   0.5rem;
+  --sp-2-5: 0.625rem;
+  --sp-3:   0.75rem;
+  --sp-4:   1rem;
+  --sp-5:   1.25rem;
+  --sp-6:   1.5rem;
+  --sp-7:   1.75rem;
+  --sp-8:   2rem;
+  --sp-9:   2.25rem;
+  --sp-10:  2.5rem;
+  --sp-12:  3rem;
+  --sp-14:  3.5rem;
+  --sp-16:  4rem;
+  --sp-20:  5rem;
+  --sp-24:  6rem;
+  --sp-32:  8rem;
 
-  /* ── Border Radius ──────────────────────────────────────── */
-  --radius-sm:   3px;
-  --radius-md:   6px;
-  --radius-lg:  10px;
-  --radius-xl:  14px;
-  --radius-2xl: 20px;
-  --radius-3xl: 28px;
+  /* ── Raios (cantos mais clássicos, menos "SaaS") ───────── */
+  --radius-sm:   2px;
+  --radius-md:   3px;
+  --radius-lg:   5px;
+  --radius-xl:   6px;
+  --radius-2xl: 10px;
+  --radius-3xl: 16px;
   --radius-full: 9999px;
 
-  /* ── Shadows ────────────────────────────────────────────── */
-  --shadow-xs:        0 1px 2px rgba(0,0,0,0.4);
-  --shadow-sm:        0 2px 6px rgba(0,0,0,0.45);
-  --shadow-md:        0 4px 14px rgba(0,0,0,0.5);
-  --shadow-lg:        0 8px 32px rgba(0,0,0,0.55);
-  --shadow-xl:        0 16px 48px rgba(0,0,0,0.6);
-  --shadow-spotlight: 0 0 32px var(--spotlight-glow);
-  --shadow-inset:     inset 0 1px 0 rgba(255,255,255,0.05);
+  /* ── Sombras (quentes, marrons) ────────────────────────── */
+  --shadow-xs:        0 1px 2px rgba(8, 4, 2, 0.45);
+  --shadow-sm:        0 2px 6px rgba(8, 4, 2, 0.5);
+  --shadow-md:        0 6px 18px rgba(8, 4, 2, 0.55);
+  --shadow-lg:        0 12px 34px rgba(8, 4, 2, 0.6);
+  --shadow-xl:        0 22px 60px rgba(8, 4, 2, 0.7);
+  --shadow-spotlight: 0 0 28px var(--spotlight-glow);
+  --shadow-inset:     inset 0 1px 0 rgba(230, 213, 185, 0.05);
+  --shadow-gilded:    0 0 0 1px rgba(169, 135, 74, 0.22), 0 10px 30px rgba(8, 4, 2, 0.55);
 
-  /* ── Animation ──────────────────────────────────────────── */
+  /* ── Gradientes discretos ──────────────────────────────── */
+  --gradient-gold:   linear-gradient(180deg, #BE9C5E 0%, #A9874A 55%, #957539 100%);
+  --gradient-velvet: linear-gradient(90deg, rgba(84, 29, 36, 0.75) 0%, rgba(84, 29, 36, 0.18) 100%);
+  --gradient-card:   linear-gradient(180deg, rgba(230, 213, 185, 0.035) 0%, rgba(230, 213, 185, 0) 60%);
+  --filet-gold:      linear-gradient(90deg, transparent, rgba(169, 135, 74, 0.55) 18%, rgba(201, 168, 106, 0.8) 50%, rgba(169, 135, 74, 0.55) 82%, transparent);
+
+  /* ── Ornamentos (SVG reutilizáveis em CSS) ─────────────── */
+  /* Cantoneiras barrocas para molduras: use com
+     background: var(--orn-corners); background-size: var(--orn-corners-size);
+     background-position: var(--orn-corners-pos); background-repeat: no-repeat; */
+  --orn-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='none' stroke='%23A9874A' stroke-linecap='round'%3E%3Cpath d='M2.5 26V10.5C2.5 6 6 2.5 10.5 2.5H26' stroke-width='1'/%3E%3Cpath d='M6 22V12c0-3.3 2.7-6 6-6h10' stroke-width='.7' opacity='.55'/%3E%3Cpath d='M9.5 13.5c0-2.4 1.6-4 4-4 1.9 0 2.9 1.5 2.1 2.8-.7 1.1-2.4.9-2.6-.3' stroke-width='.9'/%3E%3Ccircle cx='2.5' cy='2.5' r='1.3' fill='%23A9874A' stroke='none'/%3E%3C/svg%3E");
+  --orn-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='none' stroke='%23A9874A' stroke-linecap='round'%3E%3Cg transform='matrix(-1 0 0 1 28 0)'%3E%3Cpath d='M2.5 26V10.5C2.5 6 6 2.5 10.5 2.5H26' stroke-width='1'/%3E%3Cpath d='M6 22V12c0-3.3 2.7-6 6-6h10' stroke-width='.7' opacity='.55'/%3E%3Cpath d='M9.5 13.5c0-2.4 1.6-4 4-4 1.9 0 2.9 1.5 2.1 2.8-.7 1.1-2.4.9-2.6-.3' stroke-width='.9'/%3E%3Ccircle cx='2.5' cy='2.5' r='1.3' fill='%23A9874A' stroke='none'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='none' stroke='%23A9874A' stroke-linecap='round'%3E%3Cg transform='matrix(1 0 0 -1 0 28)'%3E%3Cpath d='M2.5 26V10.5C2.5 6 6 2.5 10.5 2.5H26' stroke-width='1'/%3E%3Cpath d='M6 22V12c0-3.3 2.7-6 6-6h10' stroke-width='.7' opacity='.55'/%3E%3Cpath d='M9.5 13.5c0-2.4 1.6-4 4-4 1.9 0 2.9 1.5 2.1 2.8-.7 1.1-2.4.9-2.6-.3' stroke-width='.9'/%3E%3Ccircle cx='2.5' cy='2.5' r='1.3' fill='%23A9874A' stroke='none'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='none' stroke='%23A9874A' stroke-linecap='round'%3E%3Cg transform='matrix(-1 0 0 -1 28 28)'%3E%3Cpath d='M2.5 26V10.5C2.5 6 6 2.5 10.5 2.5H26' stroke-width='1'/%3E%3Cpath d='M6 22V12c0-3.3 2.7-6 6-6h10' stroke-width='.7' opacity='.55'/%3E%3Cpath d='M9.5 13.5c0-2.4 1.6-4 4-4 1.9 0 2.9 1.5 2.1 2.8-.7 1.1-2.4.9-2.6-.3' stroke-width='.9'/%3E%3Ccircle cx='2.5' cy='2.5' r='1.3' fill='%23A9874A' stroke='none'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-corners:      var(--orn-tl), var(--orn-tr), var(--orn-bl), var(--orn-br);
+  --orn-corners-size: 28px 28px, 28px 28px, 28px 28px, 28px 28px;
+  --orn-corners-pos:  top 5px left 5px, top 5px right 5px, bottom 5px left 5px, bottom 5px right 5px;
+
+  /* Textura sutil de papel antigo (ruído SVG, ~1 KB) */
+  --texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .9 0 0 0 0 .83 0 0 0 0 .72 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* ── Animação ───────────────────────────────────────────── */
   --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out:  cubic-bezier(0.45, 0, 0.55, 1);
   --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-linear:  linear;
 
   --dur-instant: 80ms;
-  --dur-fast:   150ms;
-  --dur-normal: 250ms;
-  --dur-slow:   400ms;
-  --dur-slower: 600ms;
+  --dur-fast:   160ms;
+  --dur-normal: 260ms;
+  --dur-slow:   420ms;
+  --dur-slower: 650ms;
 
   /* ── Layout ─────────────────────────────────────────────── */
-  --sidebar-width:      236px;
-  --sidebar-collapsed:   60px;
-  --topbar-height:       56px;
+  --sidebar-width:      248px;
+  --sidebar-collapsed:   64px;
+  --topbar-height:       60px;
   --content-max:       1440px;
   --panel-width:        380px;
 }

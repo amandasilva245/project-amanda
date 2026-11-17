@@ -2,11 +2,11 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sp-1-5);
-  padding: 2px var(--sp-2);
-  border-radius: var(--radius-full);
-  font-size: var(--text-2xs);
+  padding: 3px var(--sp-2-5);
+  border-radius: var(--radius-sm);
+  font-size: 0.65rem;
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   border: 1px solid transparent;
   white-space: nowrap;
@@ -15,17 +15,17 @@
 .dot {
   width: 5px;
   height: 5px;
-  border-radius: var(--radius-full);
+  transform: rotate(45deg);
   background: currentColor;
   flex-shrink: 0;
 }
 
-/* Variants */
-.neutral { background: rgba(107,104,101,0.15); color: var(--text-secondary); border-color: rgba(107,104,101,0.2); }
-.success { background: var(--success-bg);  color: var(--success);  border-color: rgba(62,207,142,0.25); }
-.warning { background: var(--warning-bg);  color: var(--warning);  border-color: rgba(245,158,11,0.25); }
-.error   { background: var(--error-bg);    color: var(--error);    border-color: rgba(243,106,106,0.25); }
-.info    { background: var(--info-bg);     color: var(--info);     border-color: rgba(96,165,250,0.25); }
-.iris    { background: var(--iris-glow);   color: var(--iris);     border-color: rgba(124,92,191,0.25); }
-.muted   { background: rgba(255,255,255,0.04); color: var(--text-muted); border-color: var(--border-subtle); }
-.spotlight { background: var(--spotlight-glow); color: var(--spotlight-text); border-color: rgba(223,168,67,0.25); }
+/* Variants — tons clássicos; borda derivada da própria cor */
+.neutral   { background: rgba(160,142,122,0.12); color: var(--text-secondary); border-color: rgba(160,142,122,0.28); }
+.success   { background: var(--success-bg); color: var(--success); border-color: rgba(157,190,138,0.3); }
+.warning   { background: var(--warning-bg); color: var(--warning); border-color: rgba(221,170,94,0.32); }
+.error     { background: var(--error-bg);   color: var(--error);   border-color: rgba(224,127,136,0.3); }
+.info      { background: var(--info-bg);    color: var(--info);    border-color: rgba(157,180,192,0.3); }
+.iris      { background: rgba(84,29,36,0.45); color: var(--iris); border-color: rgba(201,138,147,0.32); }
+.muted     { background: rgba(230,213,185,0.04); color: var(--text-muted); border-color: var(--border-subtle); }
+.spotlight { background: var(--spotlight-glow); color: var(--spotlight-text); border-color: rgba(169,135,74,0.4); }

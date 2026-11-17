@@ -5,13 +5,19 @@ from sqlalchemy.pool import NullPool
 from app.core.config import settings
 
 
+# NullPool não aceita pool_size/max_overflow; passar os dois quebrava o
+# create_engine quando ENVIRONMENT=test.
+_pool_kwargs = (
+    {"poolclass": NullPool}
+    if settings.ENVIRONMENT == "test"
+    else {"pool_size": 10, "max_overflow": 20}
+)
+
 engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
     echo=settings.DEBUG,
-    poolclass=NullPool if settings.ENVIRONMENT == "test" else None,
+    **_pool_kwargs,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

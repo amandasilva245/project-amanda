@@ -59,7 +59,7 @@ class Production(Base):
     venue_capacity = Column(Integer, nullable=True)
 
     poster_url = Column(String(500), nullable=True)
-    color_accent = Column(String(7), nullable=True, default="#E8C87A")
+    color_accent = Column(String(7), nullable=True, default="#A9874A")
 
     budget_total = Column(Numeric(12, 2), nullable=True, default=0)
 

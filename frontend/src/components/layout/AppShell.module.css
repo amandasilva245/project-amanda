@@ -2,7 +2,7 @@
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background: var(--stage);
+  background: transparent; /* deixa aparecer a iluminação de palco do body */
 }
 
 .main {

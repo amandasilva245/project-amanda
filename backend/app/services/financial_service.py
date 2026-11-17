@@ -121,13 +121,14 @@ class InsightService:
             .scalar()
         )
 
+        # Pessoas distintas: quem acumula funções conta uma vez só
         total_cast = (
-            self.db.query(func.count(ProductionParticipant.id)).scalar()
+            self.db.query(func.count(func.distinct(ProductionParticipant.user_id))).scalar()
         )
 
         ticket_revenue = (
             self.db.query(func.sum(Ticket.price_paid))
-            .filter(Ticket.status != TicketStatus.CANCELLED)
+            .filter(Ticket.status.in_([TicketStatus.CONFIRMED, TicketStatus.USED]))  # reservas não são receita
             .scalar() or Decimal("0")
         )
 
@@ -143,6 +144,25 @@ class InsightService:
             "ticket_revenue": float(ticket_revenue),
             "total_tickets_sold": total_tickets_sold,
         }
+
+    def get_category_breakdown(self) -> List[Dict]:
+        """Receitas e despesas por categoria, em todas as produções (RF26)."""
+        rows = (
+            self.db.query(
+                FinancialTransaction.category,
+                FinancialTransaction.type,
+                func.sum(FinancialTransaction.amount),
+            )
+            .group_by(FinancialTransaction.category, FinancialTransaction.type)
+            .all()
+        )
+        by_cat: Dict[str, Dict[str, float]] = defaultdict(lambda: {"income": 0.0, "expense": 0.0})
+        for category, type_, total in rows:
+            by_cat[category.value]["income" if type_ == TransactionType.INCOME else "expense"] += float(total or 0)
+        return sorted(
+            ({"category": c, **v} for c, v in by_cat.items()),
+            key=lambda r: -(r["income"] + r["expense"]),
+        )
 
     def get_occupancy_trends(self) -> List[Dict]:
         batches = (

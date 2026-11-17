@@ -1,6 +1,9 @@
+/* ═══ Login Royalcore: cortinas de veludo e cartão-convite ═══ */
 .page {
   min-height: 100vh;
-  background: var(--void);
+  background:
+    radial-gradient(ellipse 55% 60% at 50% 45%, rgba(169, 135, 74, 0.13), transparent 70%),
+    var(--cafe-abyss);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,7 +12,7 @@
   overflow: hidden;
 }
 
-/* Atmospheric background blobs */
+/* Cortinas laterais */
 .ambient {
   position: absolute;
   inset: 0;
@@ -17,37 +20,77 @@
   overflow: hidden;
 }
 
-.ambientBlob1 {
+.ambientBlob1,
+.ambientBlob2 {
   position: absolute;
-  width: 600px;
-  height: 600px;
-  top: -200px;
-  left: -150px;
-  background: radial-gradient(circle, rgba(223, 168, 67, 0.06) 0%, transparent 70%);
-  border-radius: 50%;
+  top: 0;
+  bottom: 0;
+  width: 26vw;
+  max-width: 380px;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0, 0, 0, 0.38) 0px,
+      rgba(0, 0, 0, 0) 18px,
+      rgba(255, 220, 220, 0.05) 30px,
+      rgba(0, 0, 0, 0) 42px,
+      rgba(0, 0, 0, 0.38) 60px),
+    linear-gradient(180deg, var(--wine) 0%, var(--wine-deep) 100%);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.7);
+}
+
+.ambientBlob1 {
+  left: 0;
+  border-bottom-right-radius: 70% 22%;
+  mask-image: linear-gradient(90deg, #000 70%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent);
+  animation: curtainLeft 1.2s var(--ease-out) both;
 }
 
 .ambientBlob2 {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  bottom: -200px;
-  right: -100px;
-  background: radial-gradient(circle, rgba(124, 92, 191, 0.05) 0%, transparent 70%);
-  border-radius: 50%;
+  right: 0;
+  border-bottom-left-radius: 70% 22%;
+  mask-image: linear-gradient(270deg, #000 70%, transparent);
+  -webkit-mask-image: linear-gradient(270deg, #000 70%, transparent);
+  animation: curtainRight 1.2s var(--ease-out) both;
 }
 
-/* Card */
+/* Bambinela (faixa superior) */
+.ambient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 50% 100% at 50% 0%, var(--wine) 60%, transparent 62%) 0 0 / 120px 54px repeat-x;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5));
+  border-top: 3px solid var(--gold-deep);
+}
+
+@keyframes curtainLeft  { from { transform: translateX(18%); } to { transform: translateX(0); } }
+@keyframes curtainRight { from { transform: translateX(-18%); } to { transform: translateX(0); } }
+
+/* Cartão-convite */
 .card {
   width: 100%;
-  max-width: 400px;
-  background: var(--wing);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-2xl);
-  padding: var(--sp-8);
-  box-shadow: var(--shadow-xl), inset 0 1px 0 rgba(255,255,255,0.06);
+  max-width: 420px;
+  background-color: var(--wing);
+  background-image: var(--orn-corners), var(--gradient-card);
+  background-size: var(--orn-corners-size), 100% 100%;
+  background-position: var(--orn-corners-pos), 0 0;
+  background-repeat: no-repeat;
+  border: 1px solid rgba(169, 135, 74, 0.5);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-10) var(--sp-9) var(--sp-8);
+  box-shadow:
+    inset 0 0 0 5px var(--wing),
+    inset 0 0 0 6px rgba(169, 135, 74, 0.18),
+    var(--shadow-xl),
+    0 0 80px rgba(169, 135, 74, 0.08);
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: var(--sp-6);
@@ -56,45 +99,44 @@
 /* Brand */
 .brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
   gap: var(--sp-3);
 }
 
 .brandMark {
-  width: 40px;
-  height: 40px;
-  background: var(--spotlight-glow);
-  border: 1px solid rgba(223,168,67,0.35);
-  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  color: var(--spotlight);
-  flex-shrink: 0;
-  box-shadow: 0 0 20px var(--spotlight-glow);
+  color: var(--gold);
+  filter: drop-shadow(0 0 10px rgba(169, 135, 74, 0.35));
 }
 
 .brandName {
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
   font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  letter-spacing: var(--tracking-tight);
+  color: var(--ivory);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   line-height: 1;
 }
 
 .brandTagline {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  letter-spacing: var(--tracking-wide);
-  margin-top: 2px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-base);
+  color: var(--gold-bright);
+  margin-top: var(--sp-2);
   line-height: 1;
 }
 
 .divider {
-  height: 1px;
-  background: var(--border-subtle);
+  display: flex;
+  justify-content: center;
+  color: var(--gold);
+  opacity: 0.85;
 }
 
 /* Form */
@@ -107,20 +149,22 @@
 .formHeader {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: var(--sp-1);
 }
 
 .formTitle {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: var(--text-3xl);
   font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  letter-spacing: var(--tracking-tight);
+  color: var(--ivory);
+  letter-spacing: 0;
 }
 
 .formSubtitle {
   font-size: var(--text-sm);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: var(--weight-regular);
   line-height: var(--leading-normal);
 }
@@ -144,15 +188,15 @@
 }
 
 .eyeBtn:hover {
-  color: var(--text-secondary);
+  color: var(--gold-bright);
 }
 
 .authError {
   font-size: var(--text-sm);
   color: var(--error);
   background: var(--error-bg);
-  border: 1px solid rgba(243,106,106,0.2);
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(224, 127, 136, 0.3);
+  border-radius: var(--radius-sm);
   padding: var(--sp-3) var(--sp-4);
 }
 
@@ -161,7 +205,13 @@
 }
 
 .footer {
-  font-size: var(--text-xs);
-  color: var(--text-disabled);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-muted);
   text-align: center;
+}
+
+@media (max-width: 700px) {
+  .ambientBlob1, .ambientBlob2 { width: 14vw; }
+  .card { padding: var(--sp-8) var(--sp-6) var(--sp-6); }
 }

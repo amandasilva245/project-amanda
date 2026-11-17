@@ -6,6 +6,7 @@ import api from '@/services/api'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Avatar from '@/components/ui/Avatar'
+import { getErrorMessage, passwordProblem } from '@/utils/helpers'
 import styles from './Settings.module.css'
 
 const SECTION_ITEMS = [
@@ -18,6 +19,17 @@ export default function Settings() {
   const { user, logout } = useAuthStore()
 
   const [activeSection, setSection] = useState('profile')
+  const [sysInfo, setSysInfo] = useState(null)
+  const [sysError, setSysError] = useState(false)
+
+  // Informações do sistema vindas da API (TCC §4.2), carregadas ao abrir "Sobre"
+  useEffect(() => {
+    if (activeSection !== 'about') return
+    setSysError(false)
+    api.get('/api/v1/system/info')
+      .then((res) => setSysInfo(res.data))
+      .catch(() => { setSysInfo(null); setSysError(true) })
+  }, [activeSection])
 
   // Profile form
   const [profile, setProfile] = useState({ full_name: '', phone: '', bio: '' })
@@ -45,14 +57,20 @@ export default function Settings() {
     setProfileMsg(null)
     setProfileSaving(true)
     try {
-      await api.patch('/api/v1/auth/me', {
-        full_name: profile.full_name,
+      if (!profile.full_name.trim()) {
+        setProfileMsg({ type: 'error', text: 'O nome não pode ficar vazio.' })
+        return
+      }
+      const res = await api.patch('/api/v1/auth/me', {
+        full_name: profile.full_name.trim(),
         phone:     profile.phone || undefined,
         bio:       profile.bio   || undefined,
       })
+      // Atualiza o menu lateral e a barra superior sem precisar recarregar
+      useAuthStore.getState().setUser(res.data)
       setProfileMsg({ type: 'success', text: 'Perfil atualizado com sucesso.' })
     } catch (err) {
-      setProfileMsg({ type: 'error', text: err.response?.data?.detail ?? 'Erro ao salvar.' })
+      setProfileMsg({ type: 'error', text: getErrorMessage(err, 'Erro ao salvar.') })
     } finally {
       setProfileSaving(false)
     }
@@ -62,15 +80,21 @@ export default function Settings() {
     e.preventDefault()
     setPwdMsg(null)
     if (!passwords.current) { setPwdMsg({ type: 'error', text: 'Informe a senha atual.' }); return }
-    if (passwords.newPass.length < 6) { setPwdMsg({ type: 'error', text: 'Nova senha deve ter ao menos 6 caracteres.' }); return }
+    const pwdErr = passwordProblem(passwords.newPass)
+    if (pwdErr) { setPwdMsg({ type: 'error', text: pwdErr }); return }
     if (passwords.newPass !== passwords.confirm) { setPwdMsg({ type: 'error', text: 'As senhas não coincidem.' }); return }
     setPwdSaving(true)
     try {
-      await api.patch('/api/v1/auth/me', { password: passwords.newPass })
+      // Antes era um PATCH /auth/me com `password`, campo que a API ignorava:
+      // a tela dizia "sucesso" mas a senha não mudava.
+      await api.post('/api/v1/auth/me/password', {
+        current_password: passwords.current,
+        new_password:     passwords.newPass,
+      })
       setPwdMsg({ type: 'success', text: 'Senha alterada com sucesso.' })
       setPasswords({ current: '', newPass: '', confirm: '' })
     } catch (err) {
-      setPwdMsg({ type: 'error', text: err.response?.data?.detail ?? 'Erro ao alterar senha.' })
+      setPwdMsg({ type: 'error', text: getErrorMessage(err, 'Erro ao alterar senha.') })
     } finally {
       setPwdSaving(false)
     }
@@ -278,9 +302,16 @@ export default function Settings() {
               <div className={styles.aboutGrid}>
                 {[
                   { label: 'Produto',   value: 'Curtain — Theatrical Operations Platform' },
-                  { label: 'Versão',    value: '1.0.0' },
-                  { label: 'Ambiente',  value: import.meta.env.MODE === 'production' ? 'Produção' : 'Desenvolvimento' },
-                  { label: 'API',       value: window.location.origin },
+                  { label: 'Versão',    value: sysInfo?.version ?? '—' },
+                  { label: 'API',       value: sysError ? 'Indisponível' : sysInfo ? 'Operacional' : 'Verificando…' },
+                  { label: 'Banco de dados', value: sysInfo ? (sysInfo.database === 'ok' ? 'Operacional' : 'Indisponível') : '—' },
+                  ...(sysInfo?.environment ? [
+                    { label: 'Ambiente', value: sysInfo.environment },
+                    { label: 'Migração', value: sysInfo.migration ?? 'sem controle de versão' },
+                    { label: 'Python', value: sysInfo.python },
+                    { label: 'Documentação da API', value: sysInfo.docs_enabled ? `${window.location.origin}/api/docs` : 'Desligada em produção' },
+                  ] : []),
+                  { label: 'Horário do servidor', value: sysInfo ? new Date(sysInfo.server_time).toLocaleString('pt-BR') : '—' },
                   { label: 'Conta',     value: user?.email ?? '—' },
                   { label: 'Perfil',    value: user?.role?.replace('_', ' ') ?? '—' },
                 ].map(({ label, value }) => (

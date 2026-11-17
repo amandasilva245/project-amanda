@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_active_user, require_roles
+from app.core.permissions import PRODUCTION_WRITE, PRODUCTION_DELETE, PARTICIPANT_ONLY
 from app.models.user import User, UserRole
 from app.models.production import ProductionParticipant
 from app.schemas.production import (
@@ -14,10 +15,13 @@ from app.services.production_service import ProductionService
 
 router = APIRouter()
 
-WRITE_ROLES = (UserRole.ADMIN, UserRole.PRODUCER, UserRole.DIRECTOR)
+WRITE_ROLES = PRODUCTION_WRITE
 
 
-@router.get("/", response_model=dict)
+# Aceita "/productions" e "/productions/" sem redirecionamento 307, que
+# perdia o header Authorization quando o host/porta mudava atrás do proxy.
+@router.get("", response_model=dict)
+@router.get("/", response_model=dict, include_in_schema=False)
 def list_productions(
     status: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
@@ -28,11 +32,6 @@ def list_productions(
 ):
     service = ProductionService(db)
 
-    # Actors/technicians only see their own productions
-    if current_user.role in (UserRole.ACTOR, UserRole.TECHNICIAN):
-        productions = service.list_for_user(current_user.id)
-        return {"items": [ProductionResponse.model_validate(p) for p in productions], "total": len(productions)}
-
     from app.models.production import ProductionStatus
     status_enum = None
     if status:
@@ -41,7 +40,12 @@ def list_productions(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid status value")
 
-    productions, total = service.list_all(status=status_enum, search=search, limit=limit, offset=offset)
+    # Atores e técnicos só veem as produções de que participam (RF11),
+    # mas com os mesmos filtros e paginação dos demais papéis.
+    participant_id = current_user.id if current_user.role in PARTICIPANT_ONLY else None
+    productions, total = service.list_all(
+        status=status_enum, search=search, limit=limit, offset=offset, participant_user_id=participant_id,
+    )
     return {
         "items": [ProductionResponse.model_validate(p) for p in productions],
         "total": total,
@@ -50,7 +54,8 @@ def list_productions(
     }
 
 
-@router.post("/", response_model=ProductionResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ProductionResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ProductionResponse, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def create_production(
     payload: ProductionCreate,
     db: Session = Depends(get_db),
@@ -72,8 +77,8 @@ def get_production(
     if not production:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Production not found")
 
-    # Actors only see productions they're part of
-    if current_user.role in (UserRole.ACTOR, UserRole.TECHNICIAN):
+    # Atores e técnicos só veem produções de que participam (RF11)
+    if current_user.role in PARTICIPANT_ONLY:
         participant_ids = {p.user_id for p in production.participants}
         if current_user.id not in participant_ids:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
@@ -93,7 +98,10 @@ def update_production(
     if not production:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Production not found")
 
-    updated = service.update(production, payload)
+    try:
+        updated = service.update(production, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return ProductionResponse.model_validate(updated)
 
 
@@ -101,7 +109,7 @@ def update_production(
 def delete_production(
     production_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.PRODUCER)),
+    current_user: User = Depends(require_roles(*PRODUCTION_DELETE)),
 ):
     service = ProductionService(db)
     production = service.get_by_id(production_id)
@@ -122,9 +130,32 @@ def add_participant(
     if not production:
         raise HTTPException(status_code=404, detail="Production not found")
 
-    participant = service.add_participant(production, payload)
+    try:
+        participant = service.add_participant(production, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     db.refresh(participant)
     db.refresh(participant.user)
+    return ParticipantResponse.model_validate(participant)
+
+
+@router.patch("/{production_id}/participants/{participant_id}", response_model=ParticipantResponse)
+def update_participant(
+    production_id: str,
+    participant_id: str,
+    payload: ParticipantUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(*WRITE_ROLES)),
+):
+    """Edita função, personagem, cachê, valor pago e as marcações principal/confirmado (RF13)."""
+    service = ProductionService(db)
+    participant = service.get_participant(participant_id, production_id)
+    if not participant:
+        raise HTTPException(status_code=404, detail="Participant not found")
+    try:
+        participant = service.update_participant(participant, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return ParticipantResponse.model_validate(participant)
 
 

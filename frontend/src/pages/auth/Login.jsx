@@ -5,6 +5,7 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
+import { Crest, Flourish } from '@/components/ui/Ornament'
 import styles from './Login.module.css'
 
 export default function Login() {
@@ -19,6 +20,7 @@ export default function Login() {
   const validate = () => {
     const errs = {}
     if (!email) errs.email = 'Email is required'
+    else if (!/^\S+@\S+\.\S+$/.test(email.trim())) errs.email = 'Enter a valid email'
     if (!password) errs.password = 'Password is required'
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -27,7 +29,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validate()) return
-    const ok = await login(email, password)
+    const ok = await login(email.trim(), password)
     if (ok) navigate('/')
   }
 
@@ -47,14 +49,14 @@ export default function Login() {
       >
         {/* Brand */}
         <div className={styles.brand}>
-          <div className={styles.brandMark}>◎</div>
+          <div className={styles.brandMark}><Crest size={52} /></div>
           <div>
             <h1 className={styles.brandName}>Curtain</h1>
             <p className={styles.brandTagline}>Theatrical Operations Platform</p>
           </div>
         </div>
 
-        <div className={styles.divider} />
+        <div className={styles.divider}><Flourish width={200} /></div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className={styles.form} noValidate>

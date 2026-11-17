@@ -20,7 +20,7 @@
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
-  color: var(--text-disabled);
+  color: var(--text-muted);
   white-space: nowrap;
 }
 

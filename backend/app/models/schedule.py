@@ -3,7 +3,7 @@ import enum
 from datetime import datetime, timezone
 
 from sqlalchemy import (
-    Column, String, Text, Enum, DateTime, ForeignKey, Table
+    Boolean, Column, String, Text, Enum, DateTime, ForeignKey, Table, UniqueConstraint, false,
 )
 from sqlalchemy.orm import relationship
 
@@ -19,7 +19,14 @@ class ScheduleType(str, enum.Enum):
     DRESS_REHEARSAL = "dress_rehearsal"
 
 
-# Association table for schedule participants
+class AttendanceStatus(str, enum.Enum):
+    INVITED = "invited"
+    CONFIRMED = "confirmed"
+    ABSENT = "absent"
+
+
+# Tabela legada (nunca usada pela API). Mantida no modelo para que o Alembic
+# não a apague; a presença é registrada em `schedule_participant_details`.
 schedule_participants = Table(
     "schedule_participants",
     Base.metadata,
@@ -38,13 +45,16 @@ class Schedule(Base):
     type = Column(Enum(ScheduleType), nullable=False, default=ScheduleType.REHEARSAL)
     description = Column(Text, nullable=True)
 
-    start_time = Column(DateTime(timezone=True), nullable=False)
+    start_time = Column(DateTime(timezone=True), nullable=False, index=True)
     end_time = Column(DateTime(timezone=True), nullable=False)
 
     location = Column(String(255), nullable=True)
     notes = Column(Text, nullable=True)
 
-    is_cancelled = Column(String(1), default="N")
+    # Cancelamento lógico (RF17): o evento continua no histórico
+    is_cancelled = Column(Boolean, nullable=False, default=False, server_default=false())
+    cancelled_at = Column(DateTime(timezone=True), nullable=True)
+    cancel_reason = Column(String(500), nullable=True)
 
     created_at = Column(
         DateTime(timezone=True),
@@ -54,19 +64,23 @@ class Schedule(Base):
 
     # Relationships
     production = relationship("Production", back_populates="schedules")
-    participants = relationship("User", secondary=schedule_participants)
+    attendees = relationship(
+        "ScheduleParticipant", back_populates="schedule", cascade="all, delete-orphan",
+    )
 
 
 class ScheduleParticipant(Base):
-    """Extended participation with attendance tracking."""
+    """Participante convidado para um evento, com status de presença (RF16)."""
     __tablename__ = "schedule_participant_details"
+    __table_args__ = (UniqueConstraint("schedule_id", "user_id", name="uq_schedule_attendee"),)
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    schedule_id = Column(String(36), ForeignKey("schedules.id", ondelete="CASCADE"), nullable=False)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    schedule_id = Column(String(36), ForeignKey("schedules.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
 
-    status = Column(String(20), default="invited")  # invited, confirmed, absent
+    status = Column(String(20), default=AttendanceStatus.INVITED.value, nullable=False)  # invited, confirmed, absent
     notes = Column(Text, nullable=True)
 
     # Relationships
+    schedule = relationship("Schedule", back_populates="attendees")
     user = relationship("User", back_populates="schedule_entries")

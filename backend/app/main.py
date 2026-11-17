@@ -7,7 +7,6 @@ from fastapi.exceptions import RequestValidationError
 import logging
 
 from app.core.config import settings
-from app.core.database import Base, engine
 from app.api.v1.router import api_router
 
 # Import all models so Alembic / create_all can discover them
@@ -23,9 +22,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup (use Alembic in production)
-    if settings.ENVIRONMENT == "development":
-        Base.metadata.create_all(bind=engine)
+    # O schema é responsabilidade do Alembic (python migrate.py / init_db.py).
     yield
 
 
@@ -56,10 +53,12 @@ app.include_router(api_router, prefix="/api/v1")
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Log validation errors for debugging."""
-    body = await request.body()
+    # Não registra o corpo da requisição: ele pode conter senhas em texto puro.
     logger.error(f"Validation error on {request.url.path}")
-    logger.error(f"Request body: {body.decode() if body else 'empty'}")
-    logger.error(f"Validation errors: {exc.errors()}")
+    logger.error(
+        "Validation errors: %s",
+        [{"loc": e.get("loc"), "msg": e.get("msg"), "type": e.get("type")} for e in exc.errors()],
+    )
     
     # Convert error details to JSON-serializable format
     errors = []

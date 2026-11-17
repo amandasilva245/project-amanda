@@ -1,0 +1,116 @@
+/* Modais da bilheteria */
+.soldIntro {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+.codeList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.codeItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed rgba(169, 135, 74, 0.55);
+  border-radius: var(--radius-sm);
+  background: rgba(169, 135, 74, 0.06);
+}
+
+.code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--text-2xl);
+  letter-spacing: 0.18em;
+  color: var(--gold-bright);
+  user-select: all;
+}
+
+.codeSmall {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  color: var(--gold-pale);
+}
+
+.totalBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--sp-1);
+  padding-bottom: var(--sp-1);
+}
+
+.totalLabel {
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.totalValue {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  color: var(--ivory);
+  line-height: 1;
+}
+
+.privacy {
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.muted { font-size: var(--text-sm); color: var(--text-muted); }
+
+.ticketList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.ticketRow {
+  display: grid;
+  grid-template-columns: 120px 1fr auto auto auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2-5) var(--sp-3);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--text-sm);
+}
+
+.ticketRow:last-child { border-bottom: none; }
+
+.buyer {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.buyer small {
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.price { font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+
+.rowActions { display: flex; gap: var(--sp-1); }
+
+@media (max-width: 640px) {
+  .ticketRow { grid-template-columns: 1fr auto; }
+  .price, .rowActions { grid-column: 1 / -1; }
+}

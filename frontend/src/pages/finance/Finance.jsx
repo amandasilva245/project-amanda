@@ -1,9 +1,18 @@
 ﻿import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp, TrendingDown, Search } from 'lucide-react'
+import { TrendingUp, TrendingDown, Search, Plus } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
+import { useProductionStore } from '@/store/productionStore'
+import { useAuthStore } from '@/store/authStore'
 import Input from '@/components/ui/Input'
+import Button from '@/components/ui/Button'
+import { Select } from '@/components/ui/Field'
+import TransactionTable from '@/components/modules/TransactionTable'
+import TransactionModal from '@/components/modules/TransactionModal'
+import { can } from '@/utils/permissions'
+import { options } from '@/utils/labels'
 import styles from './Finance.module.css'
+import tx from '@/components/modules/Finance.module.css'
 
 const fmtCurrency = (v) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v ?? 0)
@@ -18,21 +27,36 @@ const CATEGORY_LABELS = {
 
 export default function Finance() {
   const { globalInsights, transactions, fetchGlobalInsights, fetchTransactions } = useFinanceStore()
+  const { productions, fetchProductions } = useProductionStore()
+  const user = useAuthStore((s) => s.user)
   const [activeTab, setTab] = useState('overview')
   const [txSearch, setTxSearch] = useState('')
+  const [filters, setFilters] = useState({ production_id: '', type: '', category: '', is_reconciled: '' })
+  const [modal, setModal] = useState(null)
 
   useEffect(() => {
     fetchGlobalInsights()
-    fetchTransactions()
+    fetchProductions()
   }, [])
+
+  // RF21: filtros por produção, tipo, categoria e conciliação (aplicados na API)
+  useEffect(() => {
+    const params = {}
+    Object.entries(filters).forEach(([k, v]) => { if (v !== '') params[k] = v })
+    fetchTransactions(params)
+  }, [filters])
+
+  const setFilter = (key) => (e) => setFilters((f) => ({ ...f, [key]: e.target.value }))
 
   const ins = globalInsights
   const netPositive = ins && ins.net_balance >= 0
 
-  const filteredTx = transactions.filter((tx) =>
-    !txSearch ||
-    tx.description?.toLowerCase().includes(txSearch.toLowerCase()) ||
-    (CATEGORY_LABELS[tx.category] ?? tx.category).toLowerCase().includes(txSearch.toLowerCase())
+  const q = txSearch.trim().toLowerCase()
+  const filteredTx = transactions.filter((t) =>
+    !q ||
+    t.description?.toLowerCase().includes(q) ||
+    t.reference_code?.toLowerCase().includes(q) ||
+    (CATEGORY_LABELS[t.category] ?? t.category).toLowerCase().includes(q)
   )
 
   return (
@@ -42,6 +66,9 @@ export default function Finance() {
           <p className="overline">Negócios</p>
           <h1 className={styles.title}>Financeiro</h1>
         </div>
+        {can(user, 'FINANCE_WRITE') && (
+          <Button variant="primary" leftIcon={Plus} onClick={() => setModal('new')}>Novo lançamento</Button>
+        )}
       </div>
 
       {/* Metric Strip */}
@@ -70,7 +97,7 @@ export default function Finance() {
       <div className={styles.tabs}>
         {[
           { key: 'overview',      label: 'Visão Geral' },
-          { key: 'transactions',  label: 'Transações' },
+          { key: 'transactions',  label: 'Lançamentos' },
           { key: 'productions',   label: 'Produções' },
         ].map((t) => (
           <button
@@ -86,7 +113,7 @@ export default function Finance() {
       {activeTab === 'overview' && ins && (
         <div className={styles.overviewLayout}>
           <div className={styles.topProds}>
-            <p className="overline" style={{ marginBottom: 'var(--sp-4)' }}>Maiores Receitas â€” Produções</p>
+            <p className="overline" style={{ marginBottom: 'var(--sp-4)' }}>Maiores Receitas — Produções</p>
             <div className={styles.prodsList}>
               {(ins.top_productions ?? []).map((prod, i) => {
                 const pct = ins.total_income > 0 ? (prod.revenue / ins.total_income) * 100 : 0
@@ -118,52 +145,27 @@ export default function Finance() {
 
       {activeTab === 'transactions' && (
         <div className={styles.txSection}>
-          <Input
-            placeholder="Buscar por descrição ou categoria…"
-            value={txSearch}
-            onChange={(e) => setTxSearch(e.target.value)}
-            leftIcon={Search}
-            wrapperClass={styles.txSearch}
-          />
-          <div className={styles.txList}>
-            <div className={styles.txHeader}>
-              <span>Descrição</span>
-              <span>Categoria</span>
-              <span>Data</span>
-              <span>Valor</span>
-            </div>
-            {filteredTx.map((tx) => (
-              <motion.div
-                key={tx.id}
-                className={styles.txRow}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <div className={styles.txDesc}>
-                  <span
-                    className={styles.txTypeDot}
-                    style={{ background: tx.type === 'income' ? 'var(--success)' : 'var(--error)' }}
-                  />
-                  <span className={styles.txDescText}>{tx.description}</span>
-                </div>
-                <span className={styles.txCat}>{CATEGORY_LABELS[tx.category] ?? tx.category}</span>
-                <span className={styles.txDate}>
-                  {new Date(tx.date).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </span>
-                <span
-                  className={styles.txAmount}
-                  style={{ color: tx.type === 'income' ? 'var(--success)' : 'var(--error)' }}
-                >
-                  {tx.type === 'income' ? '+' : '-'}{fmtCurrency(Math.abs(tx.amount))}
-                </span>
-              </motion.div>
-            ))}
-            {filteredTx.length === 0 && (
-              <div className={styles.txEmpty}>
-                {txSearch ? 'Nenhuma transação encontrada.' : 'Nenhuma transação registrada ainda.'}
-              </div>
-            )}
+          <div className={tx.filters}>
+            <Input
+              aria-label="Buscar lançamentos"
+              placeholder="Buscar por descrição, referência ou categoria…"
+              value={txSearch}
+              onChange={(e) => setTxSearch(e.target.value)}
+              leftIcon={Search}
+              wrapperClass={tx.search}
+            />
+            <Select aria-label="Produção" placeholder="Todas as produções" value={filters.production_id}
+              onChange={setFilter('production_id')} options={productions.map((p) => ({ value: p.id, label: p.title }))} />
+            <Select aria-label="Tipo" placeholder="Receitas e despesas" value={filters.type} onChange={setFilter('type')}
+              options={[{ value: 'income', label: 'Receitas' }, { value: 'expense', label: 'Despesas' }]} />
+            <Select aria-label="Categoria" placeholder="Todas as categorias" value={filters.category}
+              onChange={setFilter('category')} options={[...options.income, ...options.expense.filter((o) => o.value !== 'other'), { value: 'other', label: 'Outros' }].filter((o, i, a) => a.findIndex((x) => x.value === o.value) === i)} />
+            <Select aria-label="Conciliação" placeholder="Conciliação: todos" value={filters.is_reconciled}
+              onChange={setFilter('is_reconciled')}
+              options={[{ value: 'false', label: 'Pendentes' }, { value: 'true', label: 'Conciliados' }]} />
           </div>
+          <TransactionTable transactions={filteredTx} onEdit={(t) => setModal(t)} showProduction
+            emptyText={txSearch ? 'Nenhum lançamento encontrado.' : 'Nenhum lançamento registrado ainda.'} />
         </div>
       )}
 
@@ -182,6 +184,13 @@ export default function Finance() {
           )}
         </div>
       )}
+
+      <TransactionModal
+        open={!!modal}
+        transaction={modal === 'new' ? null : modal}
+        productions={productions}
+        onClose={() => setModal(null)}
+      />
     </div>
   )
 }

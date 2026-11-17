@@ -66,8 +66,14 @@ class ProductionService:
         search: Optional[str] = None,
         limit: int = 50,
         offset: int = 0,
+        participant_user_id: Optional[str] = None,
     ) -> tuple[List[Production], int]:
         query = self.db.query(Production).options(joinedload(Production.created_by))
+
+        if participant_user_id:
+            query = query.filter(
+                Production.participants.any(ProductionParticipant.user_id == participant_user_id)
+            )
 
         if status:
             query = query.filter(Production.status == status)
@@ -102,6 +108,10 @@ class ProductionService:
 
     def update(self, production: Production, data: ProductionUpdate) -> Production:
         update_data = data.model_dump(exclude_none=True)
+        start = update_data.get("start_date", production.start_date)
+        end = update_data.get("end_date", production.end_date)
+        if start and end and end < start:
+            raise ValueError("A data de encerramento não pode ser anterior à data de início.")
         for field, value in update_data.items():
             setattr(production, field, value)
         self.db.commit()
@@ -113,11 +123,43 @@ class ProductionService:
         self.db.commit()
 
     def add_participant(self, production: Production, data: ParticipantCreate) -> ProductionParticipant:
+        if not self.db.query(User).filter(User.id == data.user_id, User.is_active == True).first():
+            raise ValueError("Pessoa não encontrada ou inativa.")
         participant = ProductionParticipant(
             production_id=production.id,
             **data.model_dump(exclude_none=True),
         )
         self.db.add(participant)
+        self.db.commit()
+        self.db.refresh(participant)
+        return participant
+
+    def get_participant(self, participant_id: str, production_id: str) -> Optional[ProductionParticipant]:
+        return (
+            self.db.query(ProductionParticipant)
+            .options(joinedload(ProductionParticipant.user))
+            .filter(
+                ProductionParticipant.id == participant_id,
+                ProductionParticipant.production_id == production_id,
+            )
+            .first()
+        )
+
+    def update_participant(self, participant: ProductionParticipant, data) -> ProductionParticipant:
+        update_data = data.model_dump(exclude_unset=True)
+        # Campos de texto podem ser limpos (""); flags e valores só mudam se enviados
+        start = update_data.get("start_date", participant.start_date)
+        end = update_data.get("end_date", participant.end_date)
+        if start and end and end < start:
+            raise ValueError("A data final não pode ser anterior à data inicial.")
+        fee = update_data.get("fee", participant.fee)
+        fee_paid = update_data.get("fee_paid", participant.fee_paid)
+        if fee is not None and fee_paid is not None and fee_paid > fee:
+            raise ValueError("O valor pago não pode ser maior que o cachê.")
+        for field, value in update_data.items():
+            if field in ("role_title", "department", "is_lead", "is_confirmed") and value is None:
+                continue
+            setattr(participant, field, value)
         self.db.commit()
         self.db.refresh(participant)
         return participant
