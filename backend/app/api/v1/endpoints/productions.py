@@ -25,6 +25,7 @@ WRITE_ROLES = PRODUCTION_WRITE
 def list_productions(
     status: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
+    company_id: Optional[str] = Query(None),
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
@@ -45,6 +46,7 @@ def list_productions(
     participant_id = current_user.id if current_user.role in PARTICIPANT_ONLY else None
     productions, total = service.list_all(
         status=status_enum, search=search, limit=limit, offset=offset, participant_user_id=participant_id,
+        company_id=company_id,
     )
     return {
         "items": [ProductionResponse.model_validate(p) for p in productions],
@@ -62,7 +64,10 @@ def create_production(
     current_user: User = Depends(require_roles(*WRITE_ROLES)),
 ):
     service = ProductionService(db)
-    production = service.create(payload, current_user.id)
+    try:
+        production = service.create(payload, current_user.id)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return ProductionResponse.model_validate(production)
 
 

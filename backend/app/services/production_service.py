@@ -27,9 +27,19 @@ class ProductionService:
             counter += 1
         return slug
 
+    def _check_company(self, company_id):
+        from app.models.company import Company
+
+        if company_id and not self.db.query(Company.id).filter(Company.id == company_id).first():
+            raise ValueError("Companhia não encontrada.")
+
     def create(self, data: ProductionCreate, created_by_id: str) -> Production:
+        values = data.model_dump(exclude_none=True)
+        if not values.get("company_id"):
+            values.pop("company_id", None)
+        self._check_company(values.get("company_id"))
         production = Production(
-            **data.model_dump(exclude_none=True),
+            **values,
             slug=self._make_slug(data.title),
             created_by_id=created_by_id,
         )
@@ -67,8 +77,11 @@ class ProductionService:
         limit: int = 50,
         offset: int = 0,
         participant_user_id: Optional[str] = None,
+        company_id: Optional[str] = None,
     ) -> tuple[List[Production], int]:
         query = self.db.query(Production).options(joinedload(Production.created_by))
+        if company_id:
+            query = query.filter(Production.company_id == company_id)
 
         if participant_user_id:
             query = query.filter(
@@ -108,6 +121,9 @@ class ProductionService:
 
     def update(self, production: Production, data: ProductionUpdate) -> Production:
         update_data = data.model_dump(exclude_none=True)
+        if update_data.get("company_id") == "":  # "" = sem companhia
+            update_data["company_id"] = None
+        self._check_company(update_data.get("company_id"))
         start = update_data.get("start_date", production.start_date)
         end = update_data.get("end_date", production.end_date)
         if start and end and end < start:
