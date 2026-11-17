@@ -1,5 +1,5 @@
 .page {
-  padding: var(--sp-8) var(--sp-10);
+  padding: var(--sp-10) var(--sp-10) var(--sp-16);
   display: flex;
   flex-direction: column;
   gap: var(--sp-8);
@@ -10,9 +10,9 @@
 
 .title {
   font-family: var(--font-display);
-  font-size: var(--text-4xl);
+  font-size: var(--text-5xl);
   font-weight: var(--weight-semibold);
-  color: var(--text-primary);
+  color: var(--ivory);
   letter-spacing: var(--tracking-tighter);
   margin-top: var(--sp-1);
 }
@@ -83,7 +83,8 @@
 .statLabel { color: var(--text-muted); }
 
 .statRevenue {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   color: var(--success);
@@ -96,9 +97,11 @@
 }
 
 .batchCard {
-  background: var(--wing);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
+  background-color: var(--wing);
+  background-image: var(--gradient-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 0 0 4px var(--wing), inset 0 0 0 5px rgba(169, 135, 74, 0.1);
   padding: var(--sp-4) var(--sp-5);
   display: flex;
   flex-direction: column;
@@ -106,7 +109,7 @@
   transition: border-color var(--dur-fast) var(--ease-out);
 }
 
-.batchCard:hover { border-color: var(--border-default); }
+.batchCard:hover { border-color: var(--border-strong); }
 
 .batchInfo { display: flex; flex-direction: column; gap: var(--sp-1); }
 
@@ -159,6 +162,53 @@
 }
 
 .batchPrice {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
 }
+
+/* ═══ Royalcore ═══ */
+.title::first-letter {
+  font-family: var(--font-heading);
+  color: var(--gold-bright);
+}
+
+@media (max-width: 860px) {
+  .page { padding: var(--sp-5) var(--sp-4) var(--sp-10) !important; }
+  .title { font-size: var(--text-4xl); }
+}
+
+.header {
+  position: relative;
+  padding-bottom: var(--sp-5);
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(169, 135, 74, 0.6), rgba(169, 135, 74, 0.12) 60%, transparent);
+}
+
+.prodSection {
+  padding-bottom: var(--sp-2);
+}
+
+.prodTitle { font-size: var(--text-2xl); color: var(--ivory); }
+
+.batchOccBar { background: var(--scrim); }
+
+.batchOccFill { background: var(--gradient-gold); box-shadow: 0 0 8px rgba(169, 135, 74, 0.35); }
+
+.batchCard {
+  transition: border-color var(--dur-normal) var(--ease-out), transform var(--dur-normal) var(--ease-out);
+}
+
+.batchCard:hover { transform: translateY(-2px); }
+
+.emptyTitle { font-size: var(--text-3xl); font-style: italic; color: var(--champagne); }

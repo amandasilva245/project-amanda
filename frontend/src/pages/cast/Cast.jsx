@@ -370,7 +370,7 @@ export default function Cast() {
                   value={assign.production_id}
                   onChange={(e) => setAssign({ ...assign, production_id: e.target.value })}
                 >
-                  <option value="">â€” Não vincular agora â€”</option>
+                  <option value="">— Não vincular agora —</option>
                   {productions.map((p) => (
                     <option key={p.id} value={p.id}>{p.title}</option>
                   ))}

@@ -50,7 +50,7 @@ export default function Insights() {
           <p className="overline" style={{ marginBottom: 'var(--sp-4)' }}>Performance Health</p>
           <ResponsiveContainer width="100%" height={220}>
             <RadarChart data={radarData} margin={{ top: 0, right: 20, bottom: 0, left: 20 }}>
-              <PolarGrid stroke="rgba(255,255,255,0.06)" />
+              <PolarGrid stroke="rgba(169,135,74,0.18)" />
               <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
               <Radar name="Score" dataKey="value" stroke="var(--spotlight)" fill="var(--spotlight)" fillOpacity={0.2} />
             </RadarChart>
@@ -62,7 +62,7 @@ export default function Insights() {
           <p className="overline" style={{ marginBottom: 'var(--sp-4)' }}>Seat Occupancy Trend</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={occupancyTrends.slice(-10)} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(169,135,74,0.14)" vertical={false} />
               <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} tickFormatter={(v) => `${v}%`} />
               <Tooltip
@@ -73,7 +73,7 @@ export default function Insights() {
                   fontSize: '12px',
                   color: 'var(--text-primary)',
                 }}
-                cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                cursor={{ fill: 'rgba(169,135,74,0.08)' }}
               />
               <Bar dataKey="occupancy" name="Occupancy %" fill="var(--spotlight)" radius={[3, 3, 0, 0]} opacity={0.75} />
             </BarChart>

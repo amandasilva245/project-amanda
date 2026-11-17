@@ -86,7 +86,7 @@ export default function Finance() {
       {activeTab === 'overview' && ins && (
         <div className={styles.overviewLayout}>
           <div className={styles.topProds}>
-            <p className="overline" style={{ marginBottom: 'var(--sp-4)' }}>Maiores Receitas â€” Produções</p>
+            <p className="overline" style={{ marginBottom: 'var(--sp-4)' }}>Maiores Receitas — Produções</p>
             <div className={styles.prodsList}>
               {(ins.top_productions ?? []).map((prod, i) => {
                 const pct = ins.total_income > 0 ? (prod.revenue / ins.total_income) * 100 : 0
