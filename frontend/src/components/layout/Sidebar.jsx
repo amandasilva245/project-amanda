@@ -4,6 +4,7 @@ import {
   Ticket, BarChart3, Settings, LogOut, ChevronRight,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
+import { ROLES } from '@/utils/permissions'
 import { Crest, Flourish } from '@/components/ui/Ornament'
 import styles from './Sidebar.module.css'
 
@@ -25,16 +26,16 @@ const NAV_SECTIONS = [
     id: 'company',
     label: 'Company',
     items: [
-      { to: '/cast', icon: Users, label: 'Cast & Crew' },
+      { to: '/cast', icon: Users, label: 'Cast & Crew', roles: ROLES.PEOPLE_DIRECTORY },
     ],
   },
   {
     id: 'business',
     label: 'Business',
     items: [
-      { to: '/finance', icon: DollarSign, label: 'Financeiro', roles: ['admin', 'producer', 'financial_manager'] },
-      { to: '/tickets', icon: Ticket, label: 'Tickets' },
-      { to: '/insights', icon: BarChart3, label: 'Insights', roles: ['admin', 'producer', 'financial_manager', 'director'] },
+      { to: '/finance', icon: DollarSign, label: 'Financeiro', roles: ROLES.FINANCE_GLOBAL },
+      { to: '/tickets', icon: Ticket, label: 'Tickets', roles: ROLES.TICKETS_CHECKIN },
+      { to: '/insights', icon: BarChart3, label: 'Insights', roles: ROLES.INSIGHTS },
     ],
   },
 ]

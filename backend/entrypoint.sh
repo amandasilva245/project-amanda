@@ -1,11 +1,10 @@
 #!/bin/sh
 set -e
 
-echo "Running Alembic migrations..."
-alembic upgrade head || echo "Alembic migration skipped (tables may already exist or DB not ready)"
-
-echo "Initializing database with default user..."
-python init_db.py || echo "Database initialization skipped (may have users already)"
+# Migrações (com lock, seguro para várias réplicas) + administrador inicial.
+# Se falhar, o contêiner não sobe: melhor do que rodar com schema errado.
+echo "Aplicando migrações e verificando o administrador inicial..."
+python init_db.py
 
 echo "Starting Uvicorn..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers "${UVICORN_WORKERS:-4}"

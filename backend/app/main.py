@@ -7,7 +7,6 @@ from fastapi.exceptions import RequestValidationError
 import logging
 
 from app.core.config import settings
-from app.core.database import Base, engine
 from app.api.v1.router import api_router
 
 # Import all models so Alembic / create_all can discover them
@@ -23,9 +22,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup (use Alembic in production)
-    if settings.ENVIRONMENT == "development":
-        Base.metadata.create_all(bind=engine)
+    # O schema é responsabilidade do Alembic (python migrate.py / init_db.py).
     yield
 
 

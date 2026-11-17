@@ -66,8 +66,14 @@ class ProductionService:
         search: Optional[str] = None,
         limit: int = 50,
         offset: int = 0,
+        participant_user_id: Optional[str] = None,
     ) -> tuple[List[Production], int]:
         query = self.db.query(Production).options(joinedload(Production.created_by))
+
+        if participant_user_id:
+            query = query.filter(
+                Production.participants.any(ProductionParticipant.user_id == participant_user_id)
+            )
 
         if status:
             query = query.filter(Production.status == status)

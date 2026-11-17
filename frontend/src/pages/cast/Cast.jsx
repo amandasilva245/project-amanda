@@ -62,9 +62,9 @@ export default function Cast() {
   const [formError, setFormError] = useState(null)
 
   useEffect(() => {
-    fetchMembers()
+    fetchMembers({ full: isAdmin })
     fetchProductions()
-  }, [])
+  }, [isAdmin])
 
   const filtered = members.filter((m) =>
     !search ||

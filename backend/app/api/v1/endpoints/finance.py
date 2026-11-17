@@ -5,6 +5,7 @@ from datetime import date
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_active_user, require_roles
+from app.core.permissions import FINANCE_WRITE, FINANCE_GLOBAL, FINANCE_DELETE
 from app.models.user import User, UserRole
 from app.models.financial import FinancialTransaction, TransactionType
 from app.schemas.financial import (
@@ -14,7 +15,7 @@ from app.services.financial_service import FinancialService
 
 router = APIRouter()
 
-WRITE_ROLES = (UserRole.ADMIN, UserRole.PRODUCER, UserRole.FINANCIAL_MANAGER)
+WRITE_ROLES = FINANCE_WRITE
 
 
 @router.get("/summary/{production_id}", response_model=FinancialSummary)
@@ -43,7 +44,7 @@ def get_cashflow(
 @router.get("/global")
 def get_global_insights(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.FINANCIAL_MANAGER)),
+    current_user: User = Depends(require_roles(*FINANCE_GLOBAL)),
 ):
     service = FinancialService(db)
     return service.get_global_insights()
@@ -115,7 +116,7 @@ def update_transaction(
 def delete_transaction(
     transaction_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.FINANCIAL_MANAGER)),
+    current_user: User = Depends(require_roles(*FINANCE_DELETE)),
 ):
     transaction = db.query(FinancialTransaction).filter(FinancialTransaction.id == transaction_id).first()
     if not transaction:

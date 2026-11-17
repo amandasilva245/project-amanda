@@ -7,10 +7,11 @@ export const useCastStore = create((set) => ({
   loading: false,
   error: null,
 
-  fetchMembers: async () => {
+  // Admin vê a lista completa; produção e direção usam o diretório (dados mínimos).
+  fetchMembers: async ({ full = false } = {}) => {
     set({ loading: true, error: null })
     try {
-      const res = await api.get('/api/v1/auth/users')
+      const res = await api.get(full ? '/api/v1/auth/users' : '/api/v1/auth/directory')
       set({ members: res.data, loading: false })
     } catch (err) {
       set({ error: getErrorMessage(err), loading: false })

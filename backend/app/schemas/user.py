@@ -82,6 +82,22 @@ class TokenResponse(BaseModel):
     user: UserResponse
 
 
+class UserDirectoryEntry(BaseModel):
+    """Dados mínimos de uma pessoa para montar elencos (LGPD: sem telefone/bio)."""
+    id: str
+    full_name: str
+    email: EmailStr
+    role: UserRole
+    avatar_url: Optional[str] = None
+    is_active: bool
+
+    model_config = {"from_attributes": True}
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
