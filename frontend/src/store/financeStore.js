@@ -45,12 +45,17 @@ export const useFinanceStore = create((set, get) => ({
     }
   },
 
+  // Otimista: a caixa responde na hora e volta atrás se a API recusar
   setReconciled: async (id, value) => {
+    const mark = (v) => set((s) => ({
+      transactions: s.transactions.map((t) => (t.id === id ? { ...t, is_reconciled: v } : t)),
+    }))
+    mark(value)
     try {
-      const res = await api.patch(`/api/v1/finance/transactions/${id}`, { is_reconciled: value })
-      set((s) => ({ transactions: s.transactions.map((t) => (t.id === id ? res.data : t)) }))
+      await api.patch(`/api/v1/finance/transactions/${id}`, { is_reconciled: value })
       return true
     } catch (err) {
+      mark(!value)
       set({ error: getErrorMessage(err) })
       return false
     }

@@ -13,6 +13,8 @@ import { can } from '@/utils/permissions'
 import { fmtBRL } from '@/utils/labels'
 import styles from './Tickets.module.css'
 
+const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1)
+
 export default function Tickets() {
   const user = useAuthStore((s) => s.user)
   const { productions, fetchProductions } = useProductionStore()
@@ -152,7 +154,7 @@ export default function Tickets() {
                       <div className={styles.batchInfo}>
                         <div className={styles.batchTop}>
                           <p className={styles.batchDate}>
-                            {format(new Date(batch.performance_date), "EEE, dd 'de' MMM · HH:mm", { locale: ptBR })}
+                            {cap(format(new Date(batch.performance_date), "EEEE, dd/MM/yyyy · HH:mm", { locale: ptBR }))}
                           </p>
                           <StatusBadge status={batch.status} />
                         </div>

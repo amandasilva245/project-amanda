@@ -51,7 +51,7 @@ export default function FinanceChart({ data = [], title }) {
               axisLine={false}
               tickLine={false}
               tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
-              tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)} mil` : `${v}`)}
+              tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} mil` : `${v}`)}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.06)', strokeWidth: 1 }} />
             <Area

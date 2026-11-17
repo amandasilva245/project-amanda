@@ -288,7 +288,7 @@
   gap: var(--sp-2);
 }
 
-.batchDate { text-transform: capitalize; }
+
 
 .batchActions {
   display: flex;
