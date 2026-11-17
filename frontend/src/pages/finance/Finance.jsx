@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { TrendingUp, TrendingDown, Search } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import Input from '@/components/ui/Input'
+import { parseDate } from '@/utils/helpers'
 import styles from './Finance.module.css'
 
 const fmtCurrency = (v) =>
@@ -148,7 +149,7 @@ export default function Finance() {
                 </div>
                 <span className={styles.txCat}>{CATEGORY_LABELS[tx.category] ?? tx.category}</span>
                 <span className={styles.txDate}>
-                  {new Date(tx.date).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {parseDate(tx.date).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
                 <span
                   className={styles.txAmount}

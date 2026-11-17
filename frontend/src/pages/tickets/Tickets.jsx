@@ -5,7 +5,7 @@ import { StatusBadge } from '@/components/ui/Badge'
 import styles from './Tickets.module.css'
 
 const fmtCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v ?? 0)
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v ?? 0)
 
 export default function Tickets() {
   const { productions, fetchProductions } = useProductionStore()

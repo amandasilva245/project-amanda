@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import api from '@/services/api'
+import { getErrorMessage, stripEmpty } from '@/utils/helpers'
 
 export const useCastStore = create((set) => ({
   members: [],
@@ -12,18 +13,18 @@ export const useCastStore = create((set) => ({
       const res = await api.get('/api/v1/auth/users')
       set({ members: res.data, loading: false })
     } catch (err) {
-      set({ error: err.response?.data?.detail ?? err.message, loading: false })
+      set({ error: getErrorMessage(err), loading: false })
     }
   },
 
   createMember: async (data) => {
     set({ loading: true, error: null })
     try {
-      const res = await api.post('/api/v1/auth/users', data)
+      const res = await api.post('/api/v1/auth/users', stripEmpty(data))
       set((s) => ({ members: [res.data, ...s.members], loading: false }))
       return res.data
     } catch (err) {
-      const msg = err.response?.data?.detail ?? err.message
+      const msg = getErrorMessage(err)
       set({ error: msg, loading: false })
       return null
     }
@@ -31,10 +32,10 @@ export const useCastStore = create((set) => ({
 
   assignToProduction: async (productionId, data) => {
     try {
-      const res = await api.post(`/api/v1/productions/${productionId}/participants`, data)
+      const res = await api.post(`/api/v1/productions/${productionId}/participants`, stripEmpty(data))
       return res.data
     } catch (err) {
-      set({ error: err.response?.data?.detail ?? err.message })
+      set({ error: getErrorMessage(err) })
       return null
     }
   },

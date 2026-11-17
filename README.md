@@ -30,7 +30,7 @@ Aguarde cerca de 30 segundos para o banco inicializar. Depois acesse:
 |---|---|
 | http://localhost | Interface principal (via nginx) |
 | http://localhost:5173 | Frontend direto |
-| http://localhost:8000/docs | Documentação da API (Swagger UI) |
+| http://localhost:8000/api/docs | Documentação da API (Swagger UI; disponível quando `ENVIRONMENT` não é `production`) |
 
 ### Parar o sistema
 
@@ -56,7 +56,7 @@ docker compose up -d frontend nginx
 | Campo | Valor |
 |---|---|
 | E-mail | `admin@curtain.app` |
-| Senha | `Admin@2026` |
+| Senha | `Admin@123` |
 | Papel | Administrador |
 
 ---
@@ -125,8 +125,8 @@ docker compose down
 docker volume rm projectamanda_postgres_data
 docker compose up -d
 
-# Criar usuário admin manualmente (após resetar banco)
-docker compose exec backend python -c "
+# Criar tabelas e usuário admin manualmente (após resetar banco)
+docker compose exec backend python init_db.py
 from app.db.session import SessionLocal
 from app.models.user import User
 import bcrypt

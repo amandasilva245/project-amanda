@@ -14,10 +14,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    // Um 401 no próprio login significa senha errada: não recarregar a página,
+    // senão a mensagem de erro some antes de aparecer.
+    const isLoginCall = err.config?.url?.includes('/auth/login')
+    if (err.response?.status === 401 && !isLoginCall) {
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
-      window.location.href = '/login'
+      if (window.location.pathname !== '/login') window.location.href = '/login'
     }
     return Promise.reject(err)
   }

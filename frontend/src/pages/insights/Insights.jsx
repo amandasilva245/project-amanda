@@ -36,7 +36,7 @@ export default function Insights() {
         <StatCard label="Cast Members"        value={metrics?.total_cast_members ?? '—'}  icon={Users}    delay={0.05} />
         <StatCard label="Ticket Revenue"
           value={metrics?.ticket_revenue != null
-            ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(metrics.ticket_revenue)
+            ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(metrics.ticket_revenue)
             : '—'}
           icon={DollarSign}
           delay={0.1}

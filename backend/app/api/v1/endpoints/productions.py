@@ -17,7 +17,10 @@ router = APIRouter()
 WRITE_ROLES = (UserRole.ADMIN, UserRole.PRODUCER, UserRole.DIRECTOR)
 
 
-@router.get("/", response_model=dict)
+# Aceita "/productions" e "/productions/" sem redirecionamento 307, que
+# perdia o header Authorization quando o host/porta mudava atrás do proxy.
+@router.get("", response_model=dict)
+@router.get("/", response_model=dict, include_in_schema=False)
 def list_productions(
     status: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
@@ -50,7 +53,8 @@ def list_productions(
     }
 
 
-@router.post("/", response_model=ProductionResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ProductionResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ProductionResponse, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def create_production(
     payload: ProductionCreate,
     db: Session = Depends(get_db),

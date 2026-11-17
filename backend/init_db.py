@@ -6,13 +6,21 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
+from app.core.database import Base
 from app.core.security import hash_password
 from app.models.user import User, UserRole
+import app.models  # noqa: F401 — registra todos os modelos no metadata
 
 
 def init_db():
     """Create database tables and add default admin user."""
     engine = create_engine(str(settings.DATABASE_URL))
+
+    # O projeto ainda não tem migrações Alembic (alembic/versions não existe),
+    # então garantimos o schema aqui. create_all é idempotente: só cria o que
+    # falta e nunca altera ou apaga tabelas/dados existentes.
+    Base.metadata.create_all(bind=engine)
+
     SessionLocal = sessionmaker(bind=engine)
     session = SessionLocal()
 

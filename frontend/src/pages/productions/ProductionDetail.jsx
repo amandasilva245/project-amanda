@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore'
 import { StatusBadge } from '@/components/ui/Badge'
 import Avatar from '@/components/ui/Avatar'
 import Button from '@/components/ui/Button'
+import { parseDate } from '@/utils/helpers'
 import styles from './ProductionDetail.module.css'
 
 const DEPT_COLORS = {
@@ -34,10 +35,12 @@ export default function ProductionDetail() {
   const [activeTab, setTab] = useState('overview')
 
   useEffect(() => {
-    fetchProductionById(id)
+    // Durante a animação de saída da página o id some da URL; sem esta
+    // checagem era feita uma chamada para /productions/undefined (404).
+    if (id) fetchProductionById(id)
   }, [id])
 
-  if (loading || !prod) {
+  if (loading || !prod || prod.id !== id) {
     return (
       <div className={styles.loading}>
         <div className={styles.spinner} />
@@ -56,7 +59,7 @@ export default function ProductionDetail() {
 
   const fmtCurrency = (v) =>
     v != null
-      ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)
+      ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v)
       : '—'
 
   return (
@@ -101,7 +104,7 @@ export default function ProductionDetail() {
             {prod.first_performance_date && (
               <span className={styles.metaItem}>
                 <Calendar size={13} strokeWidth={1.75} />
-                {format(new Date(prod.first_performance_date), 'MMM d, yyyy')}
+                {format(parseDate(prod.first_performance_date), 'MMM d, yyyy')}
               </span>
             )}
             {prod.budget_total && (
@@ -165,13 +168,13 @@ export default function ProductionDetail() {
               {prod.start_date && (
                 <div className={styles.infoRow}>
                   <span className={styles.infoKey}>Start</span>
-                  <span className={styles.infoVal}>{format(new Date(prod.start_date), 'MMM d, yyyy')}</span>
+                  <span className={styles.infoVal}>{format(parseDate(prod.start_date), 'MMM d, yyyy')}</span>
                 </div>
               )}
               {prod.end_date && (
                 <div className={styles.infoRow}>
                   <span className={styles.infoKey}>End</span>
-                  <span className={styles.infoVal}>{format(new Date(prod.end_date), 'MMM d, yyyy')}</span>
+                  <span className={styles.infoVal}>{format(parseDate(prod.end_date), 'MMM d, yyyy')}</span>
                 </div>
               )}
               {prod.venue_capacity && (

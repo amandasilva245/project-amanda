@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.core.security import verify_password, create_access_token, create_refresh_token, decode_token, hash_password
 from app.core.dependencies import get_current_active_user, require_admin
 from app.models.user import User
-from app.schemas.user import LoginRequest, TokenResponse, UserCreate, UserResponse, UserUpdate, UserAdminUpdate
+from app.schemas.user import LoginRequest, TokenResponse, UserCreate, UserResponse, UserUpdate, UserAdminUpdate, PasswordChange
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -73,6 +73,19 @@ def update_me(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+
+@router.post("/me/password", status_code=status.HTTP_204_NO_CONTENT)
+def change_my_password(
+    payload: PasswordChange,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Troca a senha do próprio usuário, exigindo a senha atual."""
+    if not verify_password(payload.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Senha atual incorreta.")
+    current_user.hashed_password = hash_password(payload.new_password)
+    db.commit()
 
 
 @router.post("/users", response_model=UserResponse, dependencies=[Depends(require_admin)])

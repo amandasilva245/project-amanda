@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import api from '@/services/api'
+import { getErrorMessage, stripEmpty } from '@/utils/helpers'
 
 export const useProductionStore = create((set, get) => ({
   productions: [],
@@ -17,7 +18,7 @@ export const useProductionStore = create((set, get) => ({
       const res = await api.get('/api/v1/productions', { params })
       set({ productions: res.data.items ?? res.data, loading: false })
     } catch (err) {
-      set({ error: err.response?.data?.detail ?? err.message, loading: false })
+      set({ error: getErrorMessage(err), loading: false })
     }
   },
 
@@ -27,21 +28,21 @@ export const useProductionStore = create((set, get) => ({
       const res = await api.get(`/api/v1/productions/${id}`)
       set({ currentProduction: res.data, loading: false })
     } catch (err) {
-      set({ error: err.response?.data?.detail ?? err.message, loading: false })
+      set({ error: getErrorMessage(err), loading: false })
     }
   },
 
   createProduction: async (data) => {
     set({ loading: true, error: null })
     try {
-      const res = await api.post('/api/v1/productions', data)
+      const res = await api.post('/api/v1/productions', stripEmpty(data))
       // Optimistic prepend + server sync to ensure consistency
       set((s) => ({ productions: [res.data, ...s.productions], loading: false }))
       // Refresh from server in background
       get().fetchProductions()
       return res.data
     } catch (err) {
-      const msg = err.response?.data?.detail ?? err.message
+      const msg = getErrorMessage(err)
       set({ error: msg, loading: false })
       return null
     }
@@ -50,7 +51,7 @@ export const useProductionStore = create((set, get) => ({
   updateProduction: async (id, data) => {
     set({ loading: true, error: null })
     try {
-      const res = await api.patch(`/api/v1/productions/${id}`, data)
+      const res = await api.patch(`/api/v1/productions/${id}`, stripEmpty(data))
       set((s) => ({
         productions: s.productions.map((p) => p.id === id ? res.data : p),
         currentProduction: s.currentProduction?.id === id ? res.data : s.currentProduction,
@@ -58,7 +59,7 @@ export const useProductionStore = create((set, get) => ({
       }))
       return res.data
     } catch (err) {
-      set({ error: err.response?.data?.detail ?? err.message, loading: false })
+      set({ error: getErrorMessage(err), loading: false })
       return null
     }
   },

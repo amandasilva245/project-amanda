@@ -10,6 +10,7 @@ import { StatusBadge } from '@/components/ui/Badge'
 import ProductionTimeline from '@/components/modules/ProductionTimeline'
 import Modal from '@/components/ui/Modal'
 import { Flourish } from '@/components/ui/Ornament'
+import { parseDate } from '@/utils/helpers'
 import styles from './Productions.module.css'
 
 const STATUS_FILTERS = [
@@ -35,7 +36,7 @@ export default function Productions() {
   const [form, setForm]           = useState({ title: '', playwright: '', venue: '', status: 'development' })
   const [formError, setFormError] = useState(null)
 
-  // Debounce search input â€” avoids API call on every keystroke
+  // Debounce search input — avoids API call on every keystroke
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350)
     return () => clearTimeout(t)
@@ -53,12 +54,12 @@ export default function Productions() {
     if (!form.title.trim()) { setFormError('Título é obrigatório.'); return }
     const result = await createProduction(form)
     if (result) {
-      // Success â€” close and reset
+      // Success — close and reset
       setCreate(false)
       setForm({ title: '', playwright: '', venue: '', status: 'development' })
     } else {
-      // Failure â€” keep modal open, show error from store
-      setFormError(error ?? 'Erro ao criar produção. Verifique suas permissões.')
+      // Failure — keep modal open, show error from store
+      setFormError(useProductionStore.getState().error ?? 'Erro ao criar produção. Verifique suas permissões.')
     }
   }
 
@@ -159,7 +160,7 @@ export default function Productions() {
                       {prod.venue && <span className={styles.cardVenue}>{prod.venue}</span>}
                       {prod.first_performance_date && (
                         <span className={styles.cardDate}>
-                          {new Date(prod.first_performance_date).toLocaleDateString('pt-BR', {
+                          {parseDate(prod.first_performance_date).toLocaleDateString('pt-BR', {
                             month: 'short', day: 'numeric', year: 'numeric',
                           })}
                         </span>

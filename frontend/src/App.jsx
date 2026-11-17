@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { MotionConfig } from 'framer-motion'
 import { useAuthStore } from '@/store/authStore'
 import AppShell from '@/components/layout/AppShell'
 import PageTransition from '@/components/layout/PageTransition'
@@ -14,13 +15,15 @@ import Insights from '@/pages/insights/Insights'
 import Settings from '@/pages/settings/Settings'
 
 function ProtectedRoute({ children }) {
-  const { user } = useAuthStore()
+  const { user, initializing } = useAuthStore()
+  if (initializing) return null // aguarda /auth/me antes de decidir
   if (!user) return <Navigate to="/login" replace />
   return children
 }
 
 function PublicRoute({ children }) {
-  const { user } = useAuthStore()
+  const { user, initializing } = useAuthStore()
+  if (initializing) return null
   if (user) return <Navigate to="/" replace />
   return children
 }
@@ -30,6 +33,8 @@ export default function App() {
   useEffect(() => { initFromStorage() }, [])
 
   return (
+    // reducedMotion="user": respeita a preferência "reduzir movimento" do sistema
+    <MotionConfig reducedMotion="user">
     <BrowserRouter>
       <Routes>
         <Route
@@ -59,5 +64,6 @@ export default function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </MotionConfig>
   )
 }

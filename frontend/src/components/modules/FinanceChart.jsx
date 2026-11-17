@@ -14,7 +14,7 @@ const CustomTooltip = ({ active, payload, label }) => {
           <span className={styles.tooltipDot} style={{ background: entry.color }} />
           <span className={styles.tooltipName}>{entry.name}</span>
           <span className={styles.tooltipValue}>
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(entry.value)}
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(entry.value)}
           </span>
         </div>
       ))}

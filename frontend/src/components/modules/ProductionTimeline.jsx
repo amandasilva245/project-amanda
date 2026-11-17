@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { format, differenceInDays, isAfter, isBefore } from 'date-fns'
+import { parseDate } from '@/utils/helpers'
 import styles from './ProductionTimeline.module.css'
 
 const PHASES = [
@@ -14,8 +15,8 @@ const PHASES = [
 const STATUS_ORDER = PHASES.map((p) => p.key)
 
 function PhaseBar({ production, totalDays, timelineStart }) {
-  const start = production.start_date ? new Date(production.start_date) : null
-  const end   = production.end_date   ? new Date(production.end_date)   : null
+  const start = production.start_date ? parseDate(production.start_date) : null
+  const end   = production.end_date   ? parseDate(production.end_date)   : null
 
   if (!start || !end) return null
 
@@ -42,8 +43,8 @@ function PhaseBar({ production, totalDays, timelineStart }) {
 export default function ProductionTimeline({ productions = [] }) {
   const { timelineStart, totalDays, months } = useMemo(() => {
     const dates = productions.flatMap((p) => [
-      p.start_date && new Date(p.start_date),
-      p.end_date   && new Date(p.end_date),
+      p.start_date && parseDate(p.start_date),
+      p.end_date   && parseDate(p.end_date),
     ]).filter(Boolean)
 
     if (!dates.length) {

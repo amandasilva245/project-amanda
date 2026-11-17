@@ -13,7 +13,7 @@ import { Flourish } from '@/components/ui/Ornament'
 import styles from './Dashboard.module.css'
 
 const fmtCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v)
 
 export default function Dashboard() {
   const { user } = useAuthStore()

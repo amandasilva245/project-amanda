@@ -56,10 +56,12 @@ app.include_router(api_router, prefix="/api/v1")
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Log validation errors for debugging."""
-    body = await request.body()
+    # Não registra o corpo da requisição: ele pode conter senhas em texto puro.
     logger.error(f"Validation error on {request.url.path}")
-    logger.error(f"Request body: {body.decode() if body else 'empty'}")
-    logger.error(f"Validation errors: {exc.errors()}")
+    logger.error(
+        "Validation errors: %s",
+        [{"loc": e.get("loc"), "msg": e.get("msg"), "type": e.get("type")} for e in exc.errors()],
+    )
     
     # Convert error details to JSON-serializable format
     errors = []

@@ -20,6 +20,7 @@ export default function Login() {
   const validate = () => {
     const errs = {}
     if (!email) errs.email = 'Email is required'
+    else if (!/^\S+@\S+\.\S+$/.test(email.trim())) errs.email = 'Enter a valid email'
     if (!password) errs.password = 'Password is required'
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -28,7 +29,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validate()) return
-    const ok = await login(email, password)
+    const ok = await login(email.trim(), password)
     if (ok) navigate('/')
   }
 
