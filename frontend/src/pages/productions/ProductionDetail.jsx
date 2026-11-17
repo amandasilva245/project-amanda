@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import ProductionFormModal from '@/components/modules/ProductionFormModal'
 import ParticipantModal from '@/components/modules/ParticipantModal'
+import ProductionSchedule from '@/components/modules/ProductionSchedule'
 import { parseDate } from '@/utils/helpers'
 import { can } from '@/utils/permissions'
 import { DEPARTMENTS, GENRES, fmtBRL } from '@/utils/labels'
@@ -368,12 +369,7 @@ export default function ProductionDetail() {
         </div>
       )}
 
-      {activeTab === 'schedule' && (
-        <div className={styles.scheduleEmpty}>
-          <Calendar size={32} strokeWidth={1} style={{ color: 'var(--text-disabled)' }} />
-          <p>Agenda em breve.</p>
-        </div>
-      )}
+      {activeTab === 'schedule' && <ProductionSchedule production={prod} />}
 
       <ProductionFormModal
         open={editing}

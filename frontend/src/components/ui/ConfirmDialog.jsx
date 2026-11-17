@@ -9,7 +9,7 @@ export default function ConfirmDialog({
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm">
       <div className={styles.form}>
-        <p className={styles.confirmText}>{message}</p>
+        <div className={styles.confirmText}>{message}</div>
         {error && <p className={styles.error}>{error}</p>}
         <div className={styles.actions}>
           <Button variant="ghost" type="button" onClick={onClose}>Voltar</Button>

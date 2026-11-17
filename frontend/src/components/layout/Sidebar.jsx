@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, Theater, Users, DollarSign,
-  Ticket, BarChart3, Settings, LogOut, ChevronRight,
+  Ticket, BarChart3, Settings, LogOut, ChevronRight, CalendarDays,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { ROLES } from '@/utils/permissions'
@@ -20,6 +20,7 @@ const NAV_SECTIONS = [
     label: 'Stage',
     items: [
       { to: '/productions', icon: Theater, label: 'Productions' },
+      { to: '/agenda', icon: CalendarDays, label: 'Agenda' },
     ],
   },
   {

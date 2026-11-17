@@ -13,6 +13,7 @@ import Finance from '@/pages/finance/Finance'
 import Tickets from '@/pages/tickets/Tickets'
 import Insights from '@/pages/insights/Insights'
 import Settings from '@/pages/settings/Settings'
+import Agenda from '@/pages/agenda/Agenda'
 import { can } from '@/utils/permissions'
 
 function ProtectedRoute({ children }) {
@@ -64,6 +65,7 @@ export default function App() {
           <Route index element={<PageTransition><Dashboard /></PageTransition>} />
           <Route path="productions" element={<PageTransition><Productions /></PageTransition>} />
           <Route path="productions/:id" element={<PageTransition><ProductionDetail /></PageTransition>} />
+          <Route path="agenda" element={<PageTransition><Agenda /></PageTransition>} />
           <Route path="cast" element={<RoleRoute permission="PEOPLE_DIRECTORY"><PageTransition><Cast /></PageTransition></RoleRoute>} />
           <Route path="finance" element={<RoleRoute permission="FINANCE_GLOBAL"><PageTransition><Finance /></PageTransition></RoleRoute>} />
           <Route path="tickets" element={<RoleRoute permission="TICKETS_CHECKIN"><PageTransition><Tickets /></PageTransition></RoleRoute>} />
