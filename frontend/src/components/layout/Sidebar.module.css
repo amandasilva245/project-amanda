@@ -1,12 +1,21 @@
+/* ═══ Menu lateral Royalcore ═══════════════════════════════
+   Fundo café profundo, filete dourado duplo na borda,
+   item ativo em "veludo vinho" com filete de ouro.          */
+
 .sidebar {
+  position: relative;
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
   height: 100vh;
-  background: var(--void);
-  border-right: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(ellipse 140% 40% at 50% 0%, rgba(84, 29, 36, 0.35), transparent 70%),
+    linear-gradient(180deg, #1B110B 0%, var(--void) 100%);
+  border-right: 1px solid rgba(169, 135, 74, 0.32);
+  box-shadow: inset -4px 0 0 var(--void), inset -5px 0 0 rgba(169, 135, 74, 0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  z-index: 20;
 }
 
 /* Logo */
@@ -14,50 +23,57 @@
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  padding: var(--sp-6) var(--sp-5);
-  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--sp-6) var(--sp-5) var(--sp-3);
   flex-shrink: 0;
 }
 
 .logoMark {
-  width: 28px;
-  height: 28px;
-  background: var(--spotlight-glow);
-  border: 1px solid rgba(223, 168, 67, 0.3);
-  border-radius: var(--radius-md);
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: var(--gold);
+  filter: drop-shadow(0 0 6px rgba(169, 135, 74, 0.25));
 }
 
 .logoSymbol {
-  font-size: 14px;
-  color: var(--spotlight);
-  line-height: 1;
+  display: block;
+  color: var(--gold);
 }
 
 .logoText {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 4px;
 }
 
 .logoName {
-  font-family: var(--font-display);
-  font-size: var(--text-base);
+  font-family: var(--font-heading);
+  font-size: 1.1875rem;
   font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  letter-spacing: var(--tracking-tight);
+  color: var(--ivory);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   line-height: 1;
 }
 
 .logoTagline {
-  font-size: var(--text-2xs);
-  color: var(--text-muted);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-xs);
+  color: var(--gold);
+  letter-spacing: 0.06em;
   line-height: 1;
+}
+
+.logoFlourish {
+  display: block;
+  margin: 0 auto var(--sp-2);
+  color: var(--gold);
+  opacity: 0.8;
+  flex-shrink: 0;
 }
 
 /* Navigation */
@@ -65,7 +81,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--sp-4) 0;
+  padding: var(--sp-2) 0 var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: var(--sp-1);
@@ -77,94 +93,137 @@
 }
 
 .sectionLabel {
-  font-size: var(--text-2xs);
-  font-weight: var(--weight-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
-  color: var(--text-disabled);
-  padding: var(--sp-2) var(--sp-2) var(--sp-1-5);
+  color: var(--gold-deep);
+  padding: var(--sp-3) var(--sp-3) var(--sp-1-5);
+}
+
+.sectionLabel::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(169, 135, 74, 0.3), transparent);
 }
 
 .navItem {
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--sp-2-5);
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-md);
-  color: var(--text-muted);
+  gap: var(--sp-3);
+  padding: var(--sp-2-5) var(--sp-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
   font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-regular);
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
   transition:
     color var(--dur-fast) var(--ease-out),
-    background var(--dur-fast) var(--ease-out);
+    background var(--dur-normal) var(--ease-out),
+    border-color var(--dur-normal) var(--ease-out),
+    padding-left var(--dur-normal) var(--ease-out);
   cursor: pointer;
   text-decoration: none;
 }
 
 .navItem:hover {
-  color: var(--text-secondary);
-  background: rgba(255,255,255,0.04);
+  color: var(--ivory);
+  background: rgba(169, 135, 74, 0.07);
+  padding-left: var(--sp-4);
 }
 
 .navItem.active {
-  color: var(--text-primary);
-  background: rgba(223,168,67,0.08);
+  color: var(--ivory);
+  background: var(--gradient-velvet);
+  border-color: rgba(169, 135, 74, 0.22);
+  box-shadow: inset 2px 0 0 var(--gold), 0 4px 14px rgba(8, 4, 2, 0.35);
 }
 
 .navIcon {
   flex-shrink: 0;
-  opacity: 0.7;
-  transition: opacity var(--dur-fast) var(--ease-out);
+  color: var(--gold-deep);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.navItem:hover .navIcon {
+  color: var(--gold);
 }
 
 .navItem.active .navIcon {
-  opacity: 1;
-  color: var(--spotlight);
+  color: var(--gold-bright);
 }
 
 .navLabel {
   flex: 1;
 }
 
+/* Marcador do item ativo: losango dourado */
 .activePip {
-  width: 3px;
-  height: 14px;
-  background: var(--spotlight);
-  border-radius: var(--radius-full);
+  width: 6px;
+  height: 6px;
+  background: var(--gold-bright);
   position: absolute;
-  right: -1px;
+  right: var(--sp-3);
   top: 50%;
-  transform: translateY(-50%);
-  box-shadow: 0 0 8px var(--spotlight-glow);
+  transform: translateY(-50%) rotate(45deg);
+  box-shadow: 0 0 8px rgba(201, 168, 106, 0.6);
+  animation: pipIn var(--dur-slow) var(--ease-out);
+}
+
+@keyframes pipIn {
+  from { opacity: 0; transform: translateY(-50%) rotate(45deg) scale(0.2); }
+  to   { opacity: 1; transform: translateY(-50%) rotate(45deg) scale(1); }
 }
 
 /* Footer */
 .footer {
+  position: relative;
   padding: var(--sp-3) var(--sp-3) var(--sp-4);
-  border-top: 1px solid var(--border-subtle);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: var(--sp-1);
 }
 
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--sp-4);
+  right: var(--sp-4);
+  height: 1px;
+  background: var(--filet-gold);
+  opacity: 0.55;
+}
+
 .footerItem {
   display: flex;
   align-items: center;
-  gap: var(--sp-2-5);
+  gap: var(--sp-3);
   padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   color: var(--text-muted);
   font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-regular);
   text-decoration: none;
   transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
 }
 
-.footerItem:hover {
-  color: var(--text-secondary);
-  background: rgba(255,255,255,0.04);
+.footerItem:hover,
+.footerItem[aria-current='page'] {
+  color: var(--ivory);
+  background: rgba(169, 135, 74, 0.07);
+}
+
+.footerItem svg {
+  color: var(--gold-deep);
 }
 
 .footerDivider {
@@ -178,21 +237,23 @@
   align-items: center;
   gap: var(--sp-2-5);
   padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
 }
 
 .userAvatar {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-full);
-  background: var(--spotlight-glow);
-  border: 1px solid rgba(223,168,67,0.3);
+  background: radial-gradient(circle at 35% 30%, var(--wine-light), var(--wine-deep));
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 0 2px var(--void), 0 0 0 3px rgba(169, 135, 74, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--font-heading);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
-  color: var(--spotlight-text);
+  color: var(--champagne);
   flex-shrink: 0;
   text-transform: uppercase;
 }
@@ -206,9 +267,11 @@
 }
 
 .userName {
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--champagne);
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -217,12 +280,13 @@
 .userRole {
   font-size: var(--text-2xs);
   color: var(--text-muted);
+  letter-spacing: var(--tracking-wide);
   text-transform: capitalize;
 }
 
 .logoutBtn {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius-sm);
   background: transparent;
   border: 1px solid transparent;
@@ -238,5 +302,71 @@
 .logoutBtn:hover {
   background: var(--error-bg);
   color: var(--error);
-  border-color: rgba(243,106,106,0.2);
+  border-color: rgba(224, 127, 136, 0.3);
+}
+
+/* ── Responsivo: menu recolhido em telas estreitas ─────────
+   Os rótulos continuam no DOM (visualmente ocultos), então
+   leitores de tela seguem anunciando cada link.              */
+@media (max-width: 860px) {
+  .sidebar {
+    width: var(--sidebar-collapsed);
+    min-width: var(--sidebar-collapsed);
+  }
+
+  .logo {
+    justify-content: center;
+    padding: var(--sp-4) 0 var(--sp-2);
+  }
+
+  .logoMark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .logoText,
+  .logoFlourish,
+  .userInfo {
+    display: none;
+  }
+
+  .navSection,
+  .footer {
+    padding-left: var(--sp-2);
+    padding-right: var(--sp-2);
+  }
+
+  .sectionLabel {
+    font-size: 0;
+    padding: var(--sp-2) var(--sp-1);
+  }
+
+  .navItem,
+  .navItem:hover,
+  .footerItem {
+    justify-content: center;
+    padding: var(--sp-2-5) 0;
+  }
+
+  .navLabel,
+  .footerItem span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .activePip {
+    right: 3px;
+    width: 4px;
+    height: 4px;
+  }
+
+  .userRow {
+    flex-direction: column;
+    gap: var(--sp-2);
+    padding: var(--sp-2) 0;
+  }
 }

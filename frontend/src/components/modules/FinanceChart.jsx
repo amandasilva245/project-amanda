@@ -31,12 +31,12 @@ export default function FinanceChart({ data = [], title }) {
           <AreaChart data={data} margin={{ top: 8, right: 0, left: -16, bottom: 0 }}>
             <defs>
               <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#3ECF8E" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="#3ECF8E" stopOpacity={0} />
+                <stop offset="0%"   stopColor="#9DBE8A" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#9DBE8A" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#F36A6A" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="#F36A6A" stopOpacity={0} />
+                <stop offset="0%"   stopColor="#E07F88" stopOpacity={0.25} />
+                <stop offset="100%" stopColor="#E07F88" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -58,21 +58,21 @@ export default function FinanceChart({ data = [], title }) {
               type="monotone"
               dataKey="income"
               name="Income"
-              stroke="#3ECF8E"
+              stroke="#9DBE8A"
               strokeWidth={2}
               fill="url(#incomeGradient)"
               dot={false}
-              activeDot={{ r: 4, fill: '#3ECF8E', strokeWidth: 0 }}
+              activeDot={{ r: 4, fill: '#9DBE8A', strokeWidth: 0 }}
             />
             <Area
               type="monotone"
               dataKey="expense"
               name="Expense"
-              stroke="#F36A6A"
+              stroke="#E07F88"
               strokeWidth={2}
               fill="url(#expenseGradient)"
               dot={false}
-              activeDot={{ r: 4, fill: '#F36A6A', strokeWidth: 0 }}
+              activeDot={{ r: 4, fill: '#E07F88', strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>

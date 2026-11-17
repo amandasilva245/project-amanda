@@ -12,6 +12,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  color-scheme: dark;
 }
 
 body {
@@ -21,10 +22,29 @@ body {
   line-height: var(--leading-normal);
   color: var(--text-primary);
   background-color: var(--stage);
+  /* Iluminação de palco: luz quente vinda do alto + vinheta */
+  background-image:
+    radial-gradient(ellipse 80% 55% at 50% -10%, rgba(169, 135, 74, 0.09), transparent 70%),
+    radial-gradient(ellipse 120% 90% at 50% 120%, rgba(84, 29, 36, 0.16), transparent 60%);
+  background-attachment: fixed;
   overflow-x: hidden;
 }
 
+/* Textura de papel antigo, sobreposta de forma quase imperceptível */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: var(--texture-paper);
+  opacity: 0.045;
+  mix-blend-mode: soft-light;
+}
+
 #root {
+  position: relative;
+  z-index: 1;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -58,7 +78,7 @@ a {
 }
 
 a:hover {
-  color: var(--spotlight);
+  color: var(--gold-pale);
 }
 
 code, kbd, pre {
@@ -66,10 +86,29 @@ code, kbd, pre {
   font-size: 0.9em;
 }
 
+/* Tabelas: legibilidade operacional, cabeçalho em capitulares */
+table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+th {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
 /* ── Scrollbar ────────────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrim) transparent;
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -79,23 +118,26 @@ code, kbd, pre {
 ::-webkit-scrollbar-thumb {
   background: var(--scrim);
   border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
+  background: var(--gold-deep);
+  background-clip: padding-box;
 }
 
 /* ── Focus ────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid var(--spotlight);
+  outline: 2px solid var(--gold-bright);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
 /* ── Selection ────────────────────────────────────────────── */
 ::selection {
-  background: var(--spotlight-glow);
-  color: var(--spotlight-text);
+  background: rgba(169, 135, 74, 0.35);
+  color: var(--ivory);
 }
 
 /* ── Utility Classes ─────────────────────────────────────── */
@@ -112,6 +154,7 @@ code, kbd, pre {
 }
 
 .font-display { font-family: var(--font-display); }
+.font-heading { font-family: var(--font-heading); }
 .font-mono    { font-family: var(--font-mono); }
 
 .text-primary   { color: var(--text-primary); }
@@ -125,21 +168,22 @@ code, kbd, pre {
   white-space: nowrap;
 }
 
-/* ── Divider ──────────────────────────────────────────────── */
+/* ── Divider (filete dourado) ─────────────────────────────── */
 .divider {
   height: 1px;
-  background: var(--border-subtle);
+  background: var(--filet-gold);
+  opacity: 0.6;
   width: 100%;
 }
 
-/* ── Overline (label above headings) ─────────────────────── */
+/* ── Overline (rótulo em capitulares acima de títulos) ───── */
 .overline {
-  font-family: var(--font-sans);
-  font-size: var(--text-2xs);
-  font-weight: var(--weight-semibold);
+  font-family: var(--font-heading);
+  font-size: 0.6875rem;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--gold);
 }
 
 /* ── Page container ──────────────────────────────────────── */
@@ -155,10 +199,66 @@ code, kbd, pre {
   }
 }
 
-/* ── Glass surface ───────────────────────────────────────── */
+/* ── Glass surface → superfície de veludo escuro ─────────── */
 .glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(39, 25, 17, 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
+}
+
+/* ═══ Royalcore: utilitários decorativos reutilizáveis ═════ */
+
+/* Moldura com cantoneiras barrocas (sem JSX extra) */
+.ornate-frame {
+  position: relative;
+  border: 1px solid var(--border-default);
+  background-image: var(--orn-corners);
+  background-size: var(--orn-corners-size);
+  background-position: var(--orn-corners-pos);
+  background-repeat: no-repeat;
+}
+
+/* Filete duplo dourado (papelaria de luxo) */
+.gilded-edge {
+  box-shadow:
+    inset 0 0 0 1px rgba(169, 135, 74, 0.28),
+    inset 0 0 0 4px var(--wing),
+    inset 0 0 0 5px rgba(169, 135, 74, 0.14);
+}
+
+/* Título com capitular decorada */
+.drop-cap::first-letter {
+  font-family: var(--font-heading);
+  color: var(--gold-bright);
+}
+
+/* Divisória ornamental com losango central */
+.ornament-rule {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--gold);
+}
+
+.ornament-rule::before,
+.ornament-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(169, 135, 74, 0.6));
+}
+
+.ornament-rule::after {
+  background: linear-gradient(90deg, rgba(169, 135, 74, 0.6), transparent);
+}
+
+/* ── Acessibilidade: respeitar redução de movimento ──────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
