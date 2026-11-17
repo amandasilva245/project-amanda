@@ -76,7 +76,7 @@ export default function ProductionDetail() {
       >
         <div
           className={styles.heroAccent}
-          style={{ background: `linear-gradient(135deg, ${prod.color_accent ?? '#DFA843'}22, transparent)` }}
+          style={{ background: `linear-gradient(135deg, ${prod.color_accent ?? '#A9874A'}22, transparent)` }}
         />
         <div className={styles.heroContent}>
           <div className={styles.heroTop}>

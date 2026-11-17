@@ -9,6 +9,7 @@ import Input from '@/components/ui/Input'
 import { StatusBadge } from '@/components/ui/Badge'
 import ProductionTimeline from '@/components/modules/ProductionTimeline'
 import Modal from '@/components/ui/Modal'
+import { Flourish } from '@/components/ui/Ornament'
 import styles from './Productions.module.css'
 
 const STATUS_FILTERS = [
@@ -150,6 +151,7 @@ export default function Productions() {
                     {prod.playwright && (
                       <p className={styles.cardPlaywright}>por {prod.playwright}</p>
                     )}
+                    <Flourish width={120} className={styles.cardFlourish} />
                     {prod.synopsis && (
                       <p className={styles.cardSynopsis}>{prod.synopsis}</p>
                     )}

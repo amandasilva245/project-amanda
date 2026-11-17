@@ -9,6 +9,7 @@ import ProductionTimeline from '@/components/modules/ProductionTimeline'
 import { StatusBadge } from '@/components/ui/Badge'
 import { AvatarGroup } from '@/components/ui/Avatar'
 import { Link } from 'react-router-dom'
+import { Flourish } from '@/components/ui/Ornament'
 import styles from './Dashboard.module.css'
 
 const fmtCurrency = (v) =>
@@ -45,6 +46,7 @@ export default function Dashboard() {
             {greeting()}, {user?.full_name?.split(' ')[0]}.
           </h1>
           <p className={styles.date}>{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
+          <Flourish width={220} className={styles.headerFlourish} />
         </div>
       </div>
 
