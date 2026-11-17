@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import (
     Column, String, Text, Enum, DateTime, Date,
-    Integer, Numeric, ForeignKey, Boolean, UniqueConstraint
+    Integer, Numeric, ForeignKey, Boolean, UniqueConstraint, false,
 )
 from sqlalchemy.orm import relationship
 
@@ -39,6 +39,9 @@ class TicketBatch(Base):
     price = Column(Numeric(8, 2), nullable=False)
     price_premium = Column(Numeric(8, 2), nullable=True)
 
+    # Lugares ocupados (reservados + confirmados + utilizados). Mantido pela API
+    # na mesma transação de cada venda/cancelamento; lotes anteriores à Fase 7
+    # podem ter um valor digitado manualmente, que é preservado.
     tickets_sold = Column(Integer, default=0, nullable=False)
     status = Column(Enum(TicketBatchStatus), nullable=False, default=TicketBatchStatus.ON_SALE)
 
@@ -77,10 +80,13 @@ class Ticket(Base):
     seat_number = Column(String(20), nullable=True)
 
     price_paid = Column(Numeric(8, 2), nullable=False)
-    status = Column(Enum(TicketStatus), nullable=False, default=TicketStatus.CONFIRMED)
+    is_premium = Column(Boolean, nullable=False, default=False, server_default=false())
+    status = Column(Enum(TicketStatus), nullable=False, default=TicketStatus.CONFIRMED, index=True)
 
     purchase_date = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     used_at = Column(DateTime(timezone=True), nullable=True)
+    checked_in_by_id = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    cancelled_at = Column(DateTime(timezone=True), nullable=True)
     notes = Column(Text, nullable=True)
 
     created_at = Column(

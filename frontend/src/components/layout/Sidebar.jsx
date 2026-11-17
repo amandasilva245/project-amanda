@@ -35,7 +35,7 @@ const NAV_SECTIONS = [
     label: 'Business',
     items: [
       { to: '/finance', icon: DollarSign, label: 'Financeiro', roles: ROLES.FINANCE_GLOBAL },
-      { to: '/tickets', icon: Ticket, label: 'Tickets', roles: ROLES.TICKETS_CHECKIN },
+      { to: '/tickets', icon: Ticket, label: 'Bilheteria', roles: ROLES.TICKETS_CHECKIN },
       { to: '/insights', icon: BarChart3, label: 'Insights', roles: ROLES.INSIGHTS },
     ],
   },

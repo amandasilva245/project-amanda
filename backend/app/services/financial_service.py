@@ -128,7 +128,7 @@ class InsightService:
 
         ticket_revenue = (
             self.db.query(func.sum(Ticket.price_paid))
-            .filter(Ticket.status != TicketStatus.CANCELLED)
+            .filter(Ticket.status.in_([TicketStatus.CONFIRMED, TicketStatus.USED]))  # reservas não são receita
             .scalar() or Decimal("0")
         )
 

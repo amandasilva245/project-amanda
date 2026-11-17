@@ -212,3 +212,90 @@
 .batchCard:hover { transform: translateY(-2px); }
 
 .emptyTitle { font-size: var(--text-3xl); font-style: italic; color: var(--champagne); }
+
+/* ── Bilheteria (Fase 7) ─────────────────────────────────── */
+.checkin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--wing);
+  background-image: radial-gradient(ellipse 70% 120% at 0% 0%, rgba(84, 29, 36, 0.45), transparent 70%);
+  border: 1px solid rgba(169, 135, 74, 0.4);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 0 0 4px var(--wing), inset 0 0 0 5px rgba(169, 135, 74, 0.12);
+}
+
+.checkinHead {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--gold-bright);
+}
+
+.checkinTitle {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--champagne);
+}
+
+.checkinForm {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.checkinInput { flex: 1 1 260px; }
+
+.checkinInput input {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.14em;
+  font-size: var(--text-base);
+}
+
+.checkResult {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+
+.checkResult div { display: flex; flex-direction: column; gap: 2px; }
+.checkResult span { color: var(--text-secondary); font-size: var(--text-xs); }
+
+.checkOk {
+  background: rgba(157, 190, 138, 0.12);
+  border: 1px solid rgba(157, 190, 138, 0.5);
+  color: var(--success);
+}
+
+.checkFail {
+  background: var(--error-bg);
+  border: 1px solid rgba(224, 127, 136, 0.5);
+  color: var(--error);
+}
+
+.errorLine { font-size: var(--text-xs); color: var(--error); }
+
+.batchTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.batchDate { text-transform: capitalize; }
+
+.batchActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.header { flex-wrap: wrap; gap: var(--sp-4); }
