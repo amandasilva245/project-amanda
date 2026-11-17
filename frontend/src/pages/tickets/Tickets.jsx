@@ -79,7 +79,7 @@ export default function Tickets() {
           <h2 id="checkin-title" className={styles.checkinTitle}>Check-in na entrada</h2>
         </div>
         <form className={styles.checkinForm} onSubmit={handleCheckIn}>
-          <Input ref={codeRef} aria-label="Código do ingresso" placeholder="Digite ou leia o código do ingresso"
+          <Input ref={codeRef} aria-label="Código do ingresso" placeholder="Digite o código ou leia o QR Code"
             value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} autoComplete="off"
             wrapperClass={styles.checkinInput} />
           <Button type="submit" variant="primary" loading={checking}>Validar entrada</Button>
