@@ -63,6 +63,13 @@ class ParticipantResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class CompanyRef(BaseModel):
+    id: str
+    name: str
+
+    model_config = {"from_attributes": True}
+
+
 class ProductionCreate(BaseModel):
     title: str = Field(min_length=1, max_length=255)
     subtitle: Optional[str] = None
@@ -79,6 +86,8 @@ class ProductionCreate(BaseModel):
     color_accent: Optional[str] = Field(default=None, pattern=r"^#[0-9A-Fa-f]{6}$")
     # Aparece na página pública de ingressos (fase 8)
     is_public: bool = False
+    duration_minutes: Optional[int] = Field(default=None, gt=0, le=1440)
+    company_id: Optional[str] = None
 
     @model_validator(mode="after")
     def _period(self):
@@ -102,6 +111,8 @@ class ProductionUpdate(BaseModel):
     poster_url: Optional[str] = None
     color_accent: Optional[str] = Field(default=None, pattern=r"^#[0-9A-Fa-f]{6}$")
     is_public: Optional[bool] = None
+    duration_minutes: Optional[int] = Field(default=None, gt=0, le=1440)
+    company_id: Optional[str] = None
 
 
 class ProductionResponse(BaseModel):
@@ -122,6 +133,9 @@ class ProductionResponse(BaseModel):
     poster_url: Optional[str] = None
     color_accent: Optional[str] = None
     is_public: bool = False
+    duration_minutes: Optional[int] = None
+    company_id: Optional[str] = None
+    company: Optional[CompanyRef] = None
     created_by: UserSummary
     created_at: datetime
     updated_at: datetime

@@ -8,7 +8,7 @@ from sqlalchemy import func, and_
 
 from app.models.production import Production, ProductionParticipant, ProductionStatus
 from app.models.financial import FinancialTransaction, TransactionType, TransactionCategory
-from app.models.ticket import TicketBatch, Ticket, TicketStatus
+from app.models.ticket import TicketBatch, TicketBatchStatus, Ticket, TicketStatus
 
 
 class FinancialService:
@@ -165,18 +165,26 @@ class InsightService:
         )
 
     def get_occupancy_trends(self) -> List[Dict]:
+        """Ocupação e receita real (ingressos pagos) das 20 últimas sessões cadastradas por data."""
         batches = (
             self.db.query(TicketBatch)
-            .filter(TicketBatch.total_seats > 0)
-            .order_by(TicketBatch.performance_date)
+            .filter(TicketBatch.total_seats > 0, TicketBatch.status != TicketBatchStatus.CANCELLED)
+            .order_by(TicketBatch.performance_date.desc())
             .limit(20)
             .all()
-        )
+        )[::-1]
+        ids = [b.id for b in batches]
+        paid = dict(
+            self.db.query(Ticket.batch_id, func.coalesce(func.sum(Ticket.price_paid), 0))
+            .filter(Ticket.batch_id.in_(ids), Ticket.status.in_([TicketStatus.CONFIRMED, TicketStatus.USED]))
+            .group_by(Ticket.batch_id)
+            .all()
+        ) if ids else {}
         return [
             {
                 "date": b.performance_date.strftime("%Y-%m-%d"),
                 "occupancy": round(b.tickets_sold / b.total_seats * 100, 1),
-                "revenue": float(b.price) * b.tickets_sold,
+                "revenue": float(paid.get(b.id, 0)),
             }
             for b in batches
         ]

@@ -301,7 +301,7 @@ export default function Settings() {
 
               <div className={styles.aboutGrid}>
                 {[
-                  { label: 'Produto',   value: 'Curtain — Theatrical Operations Platform' },
+                  { label: 'Produto',   value: 'Curtain — Gestão teatral' },
                   { label: 'Versão',    value: sysInfo?.version ?? '—' },
                   { label: 'API',       value: sysError ? 'Indisponível' : sysInfo ? 'Operacional' : 'Verificando…' },
                   { label: 'Banco de dados', value: sysInfo ? (sysInfo.database === 'ok' ? 'Operacional' : 'Indisponível') : '—' },

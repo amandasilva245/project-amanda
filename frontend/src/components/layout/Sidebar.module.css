@@ -281,7 +281,7 @@
   font-size: var(--text-2xs);
   color: var(--text-muted);
   letter-spacing: var(--tracking-wide);
-  text-transform: capitalize;
+  text-transform: none;
 }
 
 .logoutBtn {

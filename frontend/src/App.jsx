@@ -14,6 +14,10 @@ import Tickets from '@/pages/tickets/Tickets'
 import Insights from '@/pages/insights/Insights'
 import Settings from '@/pages/settings/Settings'
 import Agenda from '@/pages/agenda/Agenda'
+import Companies from '@/pages/companies/Companies'
+import Resources from '@/pages/resources/Resources'
+import Tasks from '@/pages/tasks/Tasks'
+import Help from '@/pages/help/Help'
 import PublicEvents from '@/pages/public/PublicEvents'
 import OrderStatus from '@/pages/public/OrderStatus'
 import { can } from '@/utils/permissions'
@@ -71,11 +75,15 @@ export default function App() {
           <Route path="productions" element={<PageTransition><Productions /></PageTransition>} />
           <Route path="productions/:id" element={<PageTransition><ProductionDetail /></PageTransition>} />
           <Route path="agenda" element={<PageTransition><Agenda /></PageTransition>} />
+          <Route path="tasks" element={<PageTransition><Tasks /></PageTransition>} />
+          <Route path="resources" element={<PageTransition><Resources /></PageTransition>} />
+          <Route path="companies" element={<PageTransition><Companies /></PageTransition>} />
           <Route path="cast" element={<RoleRoute permission="PEOPLE_DIRECTORY"><PageTransition><Cast /></PageTransition></RoleRoute>} />
           <Route path="finance" element={<RoleRoute permission="FINANCE_GLOBAL"><PageTransition><Finance /></PageTransition></RoleRoute>} />
           <Route path="tickets" element={<RoleRoute permission="TICKETS_CHECKIN"><PageTransition><Tickets /></PageTransition></RoleRoute>} />
           <Route path="insights" element={<RoleRoute permission="INSIGHTS"><PageTransition><Insights /></PageTransition></RoleRoute>} />
           <Route path="settings" element={<PageTransition><Settings /></PageTransition>} />
+          <Route path="ajuda" element={<PageTransition><Help /></PageTransition>} />
         </Route>
       </Routes>
     </BrowserRouter>

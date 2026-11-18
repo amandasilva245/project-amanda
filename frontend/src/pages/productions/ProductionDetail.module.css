@@ -521,3 +521,16 @@
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
+
+.heroCompany {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1-5);
+  margin-top: var(--sp-2);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+}
+.heroCompany:hover { color: var(--gold-bright); }

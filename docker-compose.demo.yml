@@ -1,0 +1,28 @@
+# Ambiente de DEMONSTRAÇÃO (banca do TCC) — dados 100% fictícios.
+#
+# Use sempre com um nome de projeto próprio (-p curtain-demo): assim o Docker
+# cria volumes separados e o banco de desenvolvimento nunca é tocado.
+#
+#   docker compose -p curtain-demo -f docker-compose.yml -f docker-compose.demo.yml up -d --build
+#   docker compose -p curtain-demo -f docker-compose.yml -f docker-compose.demo.yml exec backend python demo.py seed
+#
+# Veja "Ambiente de demonstração" no README.
+services:
+  db:
+    environment:
+      POSTGRES_DB: curtain_demo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U curtain_user -d curtain_demo"]
+
+  backend:
+    environment:
+      DATABASE_URL: postgresql://curtain_user:${DB_PASSWORD}@db:5432/curtain_demo
+      ENVIRONMENT: demo
+      DEMO_MODE: "true"
+      # Vazio: a senha das contas de demonstração é gerada e gravada em
+      # backend/.demo-password (permissão 600, ignorado pelo git).
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+      # Venda online sempre desligada na demonstração (nenhum pagamento real)
+      PUBLIC_SALES_ENABLED: "false"
+      MERCADOPAGO_ACCESS_TOKEN: ""
+      MERCADOPAGO_WEBHOOK_SECRET: ""

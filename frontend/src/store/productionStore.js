@@ -9,12 +9,13 @@ export const useProductionStore = create((set, get) => ({
   loading: false,
   error: null,
 
-  fetchProductions: async ({ status, search } = {}) => {
+  fetchProductions: async ({ status, search, company_id } = {}) => {
     set({ loading: true, error: null })
     try {
       const params = {}
       if (status) params.status = status
       if (search)  params.search = search
+      if (company_id) params.company_id = company_id
       const res = await api.get('/api/v1/productions', { params })
       set({ productions: res.data.items ?? res.data, loading: false })
     } catch (err) {
@@ -52,7 +53,9 @@ export const useProductionStore = create((set, get) => ({
   updateProduction: async (id, data) => {
     set({ error: null })
     try {
-      const res = await api.patch(`/api/v1/productions/${id}`, stripEmpty(data))
+      const body = stripEmpty(data)
+      if (data.company_id === '') body.company_id = '' // "" = remover a companhia
+      const res = await api.patch(`/api/v1/productions/${id}`, body)
       set((s) => ({
         productions: s.productions.map((p) => p.id === id ? res.data : p),
         // PATCH devolve a produção sem participantes: preserva os que já temos

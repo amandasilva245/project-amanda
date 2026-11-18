@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Theater, Users, DollarSign, Ticket, ArrowRight, TrendingUp } from 'lucide-react'
 import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { useAuthStore } from '@/store/authStore'
 import { useProductionStore } from '@/store/productionStore'
 import StatCard from '@/components/modules/StatCard'
@@ -31,9 +32,9 @@ export default function Dashboard() {
 
   const greeting = () => {
     const h = new Date().getHours()
-    if (h < 12) return 'Good morning'
-    if (h < 18) return 'Good afternoon'
-    return 'Good evening'
+    if (h < 12) return 'Bom dia'
+    if (h < 18) return 'Boa tarde'
+    return 'Boa noite'
   }
 
   return (
@@ -41,11 +42,11 @@ export default function Dashboard() {
       {/* Greeting Header */}
       <div className={styles.header}>
         <div>
-          <p className="overline">Dashboard</p>
+          <p className="overline">Visão geral</p>
           <h1 className={styles.greeting}>
             {greeting()}, {user?.full_name?.split(' ')[0]}.
           </h1>
-          <p className={styles.date}>{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
+          <p className={styles.date}>{format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
           <Flourish width={220} className={styles.headerFlourish} />
         </div>
       </div>
@@ -53,33 +54,31 @@ export default function Dashboard() {
       {/* KPI Strip */}
       <div className={styles.kpiGrid}>
         <StatCard
-          label="Active Productions"
+          label="Produções ativas"
           value={metrics?.active_productions ?? '—'}
           icon={Theater}
-          trend={1}
-          trendLabel="2 new this month"
+          trendLabel="Em pré-produção, ensaio ou em cartaz"
           delay={0}
         />
         <StatCard
-          label="Cast & Crew"
+          label="Elenco e equipe"
           value={metrics?.total_cast_members ?? '—'}
           icon={Users}
-          trendLabel="Across all productions"
+          trendLabel="Pessoas em todas as produções"
           delay={0.05}
         />
         <StatCard
-          label="Ticket Revenue"
+          label="Receita de ingressos"
           value={metrics?.ticket_revenue != null ? fmtCurrency(metrics.ticket_revenue) : '—'}
           icon={DollarSign}
-          trend={1}
-          trendLabel="vs last period"
+          trendLabel="Ingressos pagos, desde o início"
           delay={0.1}
         />
         <StatCard
-          label="Tickets Sold"
+          label="Ingressos vendidos"
           value={metrics?.total_tickets_sold ?? '—'}
           icon={Ticket}
-          trendLabel="All time"
+          trendLabel="Confirmados e já utilizados"
           delay={0.15}
         />
       </div>
@@ -89,11 +88,11 @@ export default function Dashboard() {
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <div>
-              <p className="overline">Stage Schedule</p>
-              <h2 className={styles.sectionTitle}>Active Productions</h2>
+              <p className="overline">Calendário de palco</p>
+              <h2 className={styles.sectionTitle}>Produções ativas</h2>
             </div>
             <Link to="/productions" className={styles.seeAll}>
-              View all <ArrowRight size={13} strokeWidth={2} />
+              Ver todas <ArrowRight size={13} strokeWidth={2} />
             </Link>
           </div>
           <div className={styles.timelineCard}>
@@ -106,11 +105,11 @@ export default function Dashboard() {
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <div>
-            <p className="overline">Productions</p>
-            <h2 className={styles.sectionTitle}>Recent Activity</h2>
+            <p className="overline">Produções</p>
+            <h2 className={styles.sectionTitle}>Mais recentes</h2>
           </div>
           <Link to="/productions" className={styles.seeAll}>
-            All productions <ArrowRight size={13} strokeWidth={2} />
+            Todas as produções <ArrowRight size={13} strokeWidth={2} />
           </Link>
         </div>
 

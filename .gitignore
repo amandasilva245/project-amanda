@@ -20,3 +20,6 @@ dist/
 # Testes / ferramentas
 .pytest_cache/
 .ruff_cache/
+
+# Senha gerada das contas de demonstração (backend/demo.py)
+.demo-password

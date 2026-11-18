@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Plus, Search } from 'lucide-react'
 import { useProductionStore } from '@/store/productionStore'
@@ -12,6 +12,9 @@ import ProductionFormModal from '@/components/modules/ProductionFormModal'
 import { Flourish } from '@/components/ui/Ornament'
 import { parseDate } from '@/utils/helpers'
 import { can } from '@/utils/permissions'
+import { GENRES } from '@/utils/labels'
+import { Select } from '@/components/ui/Field'
+import { useWorkStore } from '@/store/workStore'
 import styles from './Productions.module.css'
 
 const STATUS_FILTERS = [
@@ -31,6 +34,9 @@ export default function Productions() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [statusFilter, setStatus] = useState('')
   const [view, setView]           = useState('grid')
+  const [params, setParams]       = useSearchParams()
+  const companyFilter             = params.get('company') ?? ''
+  const { companies, fetchCompanies } = useWorkStore()
   const [showCreate, setCreate]   = useState(false)
 
   // Debounce search input — avoids API call on every keystroke
@@ -40,8 +46,10 @@ export default function Productions() {
   }, [search])
 
   useEffect(() => {
-    fetchProductions({ status: statusFilter || undefined, search: debouncedSearch || undefined })
-  }, [statusFilter, debouncedSearch])
+    fetchProductions({ status: statusFilter || undefined, search: debouncedSearch || undefined, company_id: companyFilter || undefined })
+  }, [statusFilter, debouncedSearch, companyFilter])
+
+  useEffect(() => { fetchCompanies() }, [])
 
   const canCreate = can(user, 'PRODUCTION_WRITE')
 
@@ -79,6 +87,12 @@ export default function Productions() {
           leftIcon={Search}
           wrapperClass={styles.searchInput}
         />
+
+        {companies.length > 0 && (
+          <Select aria-label="Companhia" placeholder="Todas as companhias" value={companyFilter}
+            options={companies.map((c) => ({ value: c.id, label: c.name }))}
+            onChange={(e) => setParams(e.target.value ? { company: e.target.value } : {})} />
+        )}
 
         <div className={styles.statusFilters}>
           {STATUS_FILTERS.map((f) => (
@@ -134,12 +148,13 @@ export default function Productions() {
                   <div className={styles.cardBody}>
                     <div className={styles.cardTop}>
                       <StatusBadge status={prod.status} />
-                      {prod.genre && <span className={styles.genre}>{prod.genre}</span>}
+                      {prod.genre && <span className={styles.genre}>{GENRES[prod.genre] ?? prod.genre}</span>}
                     </div>
                     <h2 className={styles.cardTitle}>{prod.title}</h2>
                     {prod.playwright && (
                       <p className={styles.cardPlaywright}>por {prod.playwright}</p>
                     )}
+                    {prod.company && <p className={styles.cardCompany}>{prod.company.name}</p>}
                     <Flourish width={120} className={styles.cardFlourish} />
                     {prod.synopsis && (
                       <p className={styles.cardSynopsis}>{prod.synopsis}</p>

@@ -15,6 +15,12 @@ PEOPLE_DIRECTORY = (R.ADMIN, R.PRODUCER, R.DIRECTOR)
 # Papéis que só enxergam as produções das quais participam (RF11)
 PARTICIPANT_ONLY = (R.ACTOR, R.TECHNICIAN)
 
+# Companhias e recursos
+COMPANY_WRITE = (R.ADMIN, R.PRODUCER)
+RESOURCE_WRITE = (R.ADMIN, R.PRODUCER, R.DIRECTOR, R.TECHNICIAN)
+# Tarefas: quem coordena cria e distribui; o responsável atualiza o andamento
+TASK_WRITE = (R.ADMIN, R.PRODUCER, R.DIRECTOR)
+
 # Agenda
 SCHEDULE_WRITE = (R.ADMIN, R.PRODUCER, R.DIRECTOR)
 
