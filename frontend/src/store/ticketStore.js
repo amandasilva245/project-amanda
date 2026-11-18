@@ -5,6 +5,7 @@ import { getErrorMessage, stripEmpty } from '@/utils/helpers'
 export const useTicketStore = create((set, get) => ({
   batches: [],
   summaries: {},
+  orders: [],
   loading: false,
   error: null,
 
@@ -21,6 +22,16 @@ export const useTicketStore = create((set, get) => ({
       set({ summaries: Object.fromEntries(entries) })
     } catch (err) {
       set({ error: getErrorMessage(err), loading: false })
+    }
+  },
+
+  /** Pedidos da venda online (só para quem gerencia a bilheteria). */
+  fetchOrders: async () => {
+    try {
+      const res = await api.get('/api/v1/tickets/orders')
+      set({ orders: res.data })
+    } catch {
+      set({ orders: [] })
     }
   },
 

@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react'
 import Modal from '@/components/ui/Modal'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import { Select, Textarea, formStyles as f } from '@/components/ui/Field'
+import { Checkbox, Select, Textarea, formStyles as f } from '@/components/ui/Field'
 import { options } from '@/utils/labels'
 
 const EMPTY = {
   title: '', subtitle: '', playwright: '', genre: '', status: 'development', synopsis: '',
   start_date: '', end_date: '', first_performance_date: '',
-  venue: '', venue_capacity: '', budget_total: '', color_accent: '#A9874A',
+  venue: '', venue_capacity: '', budget_total: '', color_accent: '#A9874A', is_public: false,
 }
 
-const FIELDS = Object.keys(EMPTY)
+const FIELDS = Object.keys(EMPTY).filter((k) => k !== 'is_public')
 
 /**
  * Formulário de produção (criar e editar). `initial` = produção existente.
@@ -28,6 +28,7 @@ export default function ProductionFormModal({ open, onClose, initial, onSubmit, 
     if (initial) {
       const next = { ...EMPTY }
       FIELDS.forEach((k) => { if (initial[k] != null) next[k] = String(initial[k]) })
+      next.is_public = !!initial.is_public
       setForm(next)
     } else {
       setForm(EMPTY)
@@ -85,6 +86,11 @@ export default function ProductionFormModal({ open, onClose, initial, onSubmit, 
           <Input label="Orçamento (R$)" type="number" min="0" step="0.01" value={form.budget_total} onChange={set('budget_total')} />
         </div>
         <Input label="Cor de destaque" type="color" value={form.color_accent} onChange={set('color_accent')} />
+        <Checkbox
+          label="Mostrar na página pública de ingressos (venda online)"
+          checked={form.is_public}
+          onChange={(e) => setForm((s) => ({ ...s, is_public: e.target.checked }))}
+        />
 
         {error && <p className={f.error} role="alert">{error}</p>}
 

@@ -19,6 +19,13 @@ const STATUS_CONFIG = {
   on_sale:   { label: 'À venda',    variant: 'success' },
   sold_out:  { label: 'Esgotado',   variant: 'warning' },
   completed: { label: 'Concluído',  variant: 'muted' },
+  // pedidos da venda online
+  pending:      { label: 'Aguardando', variant: 'warning' },
+  paid:         { label: 'Pago',       variant: 'success' },
+  expired:      { label: 'Expirado',   variant: 'muted' },
+  failed:       { label: 'Não pago',   variant: 'muted' },
+  refunded:     { label: 'Estornado',  variant: 'error' },
+  needs_refund: { label: 'Estornar',   variant: 'error' },
   // presença na agenda
   invited:   { label: 'Convidado',  variant: 'neutral' },
   absent:    { label: 'Ausente',    variant: 'error' },

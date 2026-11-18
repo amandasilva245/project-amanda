@@ -14,6 +14,8 @@ import Tickets from '@/pages/tickets/Tickets'
 import Insights from '@/pages/insights/Insights'
 import Settings from '@/pages/settings/Settings'
 import Agenda from '@/pages/agenda/Agenda'
+import PublicEvents from '@/pages/public/PublicEvents'
+import OrderStatus from '@/pages/public/OrderStatus'
 import { can } from '@/utils/permissions'
 
 function ProtectedRoute({ children }) {
@@ -46,6 +48,9 @@ export default function App() {
     <MotionConfig reducedMotion="user">
     <BrowserRouter>
       <Routes>
+        {/* Venda online (fase 8): aberta ao público, com ou sem login */}
+        <Route path="/ingressos" element={<PublicEvents />} />
+        <Route path="/ingressos/pedido/:id" element={<OrderStatus />} />
         <Route
           path="/login"
           element={

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, productions, finance, insights, schedules, system, tickets
+from app.api.v1.endpoints import auth, productions, finance, insights, schedules, system, tickets, public
 
 api_router = APIRouter()
 
@@ -11,3 +11,4 @@ api_router.include_router(insights.router, prefix="/insights", tags=["insights"]
 api_router.include_router(schedules.router, prefix="/schedules", tags=["schedules"])
 api_router.include_router(system.router, prefix="/system", tags=["system"])
 api_router.include_router(tickets.router, prefix="/tickets", tags=["tickets"])
+api_router.include_router(public.router, prefix="/public", tags=["public"])

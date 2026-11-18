@@ -115,7 +115,10 @@ def delete_production(
     production = service.get_by_id(production_id)
     if not production:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Production not found")
-    service.delete(production)
+    try:
+        service.delete(production)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
 
 
 @router.post("/{production_id}/participants", response_model=ParticipantResponse, status_code=201)

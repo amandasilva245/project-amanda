@@ -158,9 +158,30 @@ docker compose exec -e TEST_DATABASE_URL=postgresql://curtain_user:${DB_PASSWORD
 ### Migrações (Alembic)
 
 - `python migrate.py` aplica as migrações pendentes. Um banco criado antes das
-  migrações é reconhecido e marcado como `0001` sem nenhuma alteração.
+  migrações (inclusive com a tabela `alembic_version` vazia) é reconhecido e
+  marcado como `0001` sem nenhuma alteração. Faça um `pg_dump` antes, por garantia.
 - Nova migração depois de mudar um modelo: `alembic revision --autogenerate -m "descrição"`.
 - Desfazer a última: `alembic downgrade -1`.
+
+## Venda online de ingressos (Mercado Pago, sandbox)
+
+A página pública fica em `/ingressos`. Ela mostra as sessões à venda das
+produções marcadas como **"Mostrar na página pública"** (editar produção).
+
+1. Crie uma conta de teste no [painel de desenvolvedores do Mercado Pago](https://www.mercadopago.com.br/developers/panel)
+   e copie a **credencial de teste** (Access Token que começa com `TEST-`).
+2. No `.env`: `PUBLIC_SALES_ENABLED=true` e `MERCADOPAGO_ACCESS_TOKEN=TEST-...`.
+3. Opcional, com a API publicada em https: `PUBLIC_API_URL=https://seu-dominio`
+   e, no painel, ative Webhooks (evento "Pagamentos") para
+   `https://seu-dominio/api/v1/public/payments/mercadopago/webhook`; copie a
+   assinatura secreta para `MERCADOPAGO_WEBHOOK_SECRET`.
+4. Pague com os [cartões de teste](https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/additional-content/your-integrations/test/cards).
+
+Garantias: credencial de produção (`APP_USR-`) é recusada; nenhum dado de
+cartão passa pelo Curtain; os lugares ficam guardados por 30 minutos
+(`ORDER_HOLD_MINUTES`) e voltam à venda se o pagamento não sair; o status do
+pagamento é sempre lido na API do Mercado Pago. Os pedidos aparecem em
+**Bilheteria › Venda online**.
 
 ## Stack Tecnológica
 

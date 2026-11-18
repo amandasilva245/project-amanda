@@ -88,6 +88,8 @@ class Ticket(Base):
     checked_in_by_id = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     cancelled_at = Column(DateTime(timezone=True), nullable=True)
     notes = Column(Text, nullable=True)
+    # Pedido da venda online que gerou o ingresso (vazio nas vendas de balcão)
+    order_id = Column(String(36), ForeignKey("ticket_orders.id", ondelete="SET NULL"), nullable=True, index=True)
 
     created_at = Column(
         DateTime(timezone=True),
@@ -97,3 +99,4 @@ class Ticket(Base):
 
     # Relationships
     batch = relationship("TicketBatch", back_populates="tickets")
+    order = relationship("TicketOrder", back_populates="tickets")
