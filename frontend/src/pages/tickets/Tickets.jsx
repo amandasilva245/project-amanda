@@ -41,6 +41,8 @@ export default function Tickets() {
       production: productions.find((p) => p.id === id) ?? { id, title: 'Produção' },
       batches: list,
     }))
+      // Em cartaz primeiro; produções arquivadas por último
+      .sort((x, y) => (x.production.status === 'archived') - (y.production.status === 'archived'))
   }, [batches, productions])
 
   // RF24: check-in pelo código, atômico no servidor

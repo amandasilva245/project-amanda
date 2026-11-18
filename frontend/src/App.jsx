@@ -17,6 +17,7 @@ import Agenda from '@/pages/agenda/Agenda'
 import Companies from '@/pages/companies/Companies'
 import Resources from '@/pages/resources/Resources'
 import Tasks from '@/pages/tasks/Tasks'
+import Help from '@/pages/help/Help'
 import PublicEvents from '@/pages/public/PublicEvents'
 import OrderStatus from '@/pages/public/OrderStatus'
 import { can } from '@/utils/permissions'
@@ -82,6 +83,7 @@ export default function App() {
           <Route path="tickets" element={<RoleRoute permission="TICKETS_CHECKIN"><PageTransition><Tickets /></PageTransition></RoleRoute>} />
           <Route path="insights" element={<RoleRoute permission="INSIGHTS"><PageTransition><Insights /></PageTransition></RoleRoute>} />
           <Route path="settings" element={<PageTransition><Settings /></PageTransition>} />
+          <Route path="ajuda" element={<PageTransition><Help /></PageTransition>} />
         </Route>
       </Routes>
     </BrowserRouter>

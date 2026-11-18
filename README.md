@@ -70,12 +70,18 @@ Bancos que já tinham um administrador não são alterados.
 
 | Módulo | Rota | Descrição |
 |---|---|---|
-| **Dashboard** | `/` | Visão geral com métricas |
-| **Produções** | `/productions` | Criar e gerenciar peças teatrais |
-| **Elenco & Equipe** | `/cast` | Cadastro de pessoas, atribuição a produções |
-| **Financeiro** | `/finance` | Receitas, despesas e saldo por produção |
-| **Ingressos** | `/tickets` | Controle de vendas |
-| **Insights** | `/insights` | Relatórios e análises |
+| **Visão geral** | `/` | Indicadores vindos do banco e linha do tempo das produções |
+| **Produções** | `/productions` | Espetáculos, fases, companhia escalada, agenda, tarefas, recursos e financeiro de cada um |
+| **Agenda** | `/agenda` | Ensaios, passagens técnicas, reuniões e apresentações, com presença |
+| **Tarefas** | `/tasks` | Quadro de tarefas com responsável, prazo, prioridade e andamento |
+| **Recursos** | `/resources` | Figurinos, cenários, equipamentos e objetos de cena |
+| **Companhias** | `/companies` | Grupos teatrais e suas produções |
+| **Elenco e equipe** | `/cast` | Cadastro de pessoas e participação nas produções |
+| **Financeiro** | `/finance` | Receitas, despesas, conciliação e saldo por produção |
+| **Bilheteria** | `/tickets` | Lotes por sessão, venda no balcão, reservas, QR Code e check-in |
+| **Indicadores** | `/insights` | Gráficos de receitas/despesas por categoria e ocupação por sessão |
+| **Ajuda e manual** | `/ajuda` | Manual do usuário com busca (PDF em `/manual/manual-curtain.pdf`) |
+| **Venda online** | `/ingressos` | Página pública de ingressos (Mercado Pago, só modo de teste) |
 | **Configurações** | `/settings` | Perfil, segurança e informações do sistema |
 
 ---
@@ -162,6 +168,51 @@ docker compose exec -e TEST_DATABASE_URL=postgresql://curtain_user:${DB_PASSWORD
   marcado como `0001` sem nenhuma alteração. Faça um `pg_dump` antes, por garantia.
 - Nova migração depois de mudar um modelo: `alembic revision --autogenerate -m "descrição"`.
 - Desfazer a última: `alembic downgrade -1`.
+
+## Ambiente de demonstração (banca)
+
+Um ambiente separado, com **banco próprio (`curtain_demo`)** e dados 100% fictícios:
+3 companhias, 10 produções em fases diferentes, 42 pessoas, agenda com presença,
+tarefas, recursos, lançamentos financeiros e cerca de 3.600 ingressos (vendidos,
+reservados, cancelados e já usados na entrada). Uma faixa no topo avisa
+"Ambiente de demonstração · dados fictícios" e a tela de login lista os perfis
+de teste (só e-mails). Nenhum pagamento real é feito: a venda online fica desligada.
+
+```bash
+# Sobe a demonstração em um projeto Docker próprio (volumes separados do dev)
+docker compose -p curtain-demo -f docker-compose.yml -f docker-compose.demo.yml up -d --build
+
+# Popula (pode rodar de novo: não duplica nada)
+docker compose -p curtain-demo -f docker-compose.yml -f docker-compose.demo.yml exec backend python demo.py seed
+
+# Confere a consistência dos dados
+docker compose -p curtain-demo -f docker-compose.yml -f docker-compose.demo.yml exec backend python demo.py check
+
+# Volta ao estado inicial (esvazia SÓ o banco de demonstração e popula de novo)
+docker compose -p curtain-demo -f docker-compose.yml -f docker-compose.demo.yml exec backend python demo.py reset
+```
+
+- **Senha das contas:** defina `DEMO_PASSWORD` no `.env`, ou deixe vazio para o
+  script gerar uma e gravar em `backend/.demo-password` (permissão 600, fora do git).
+  A senha nunca é exibida no terminal nem na tela.
+- **Contas:** `admin@`, `producao@`, `financeiro@`, `direcao@`, `tecnica@` e
+  `elenco@curtain.example` (domínio reservado, não recebe e-mails).
+- **Travas:** o script se recusa a rodar sem `DEMO_MODE=true`, em banco cujo nome
+  não termine em `_demo` ou com `ENVIRONMENT=production`.
+- **Datas:** os eventos e sessões são criados em relação ao dia em que o script
+  roda. Rode `reset` na véspera da apresentação para a agenda ficar atual.
+- Sem Docker: `cd backend && DATABASE_URL=postgresql://.../curtain_demo DEMO_MODE=true python demo.py seed`.
+
+### Manual em PDF
+
+O PDF (`frontend/public/manual/manual-curtain.pdf`) é gerado a partir do mesmo
+conteúdo da página `/ajuda` (`frontend/src/pages/help/manual.js`):
+
+```bash
+cd frontend && node scripts/manual-pdf.mjs   # requer Playwright com Chromium
+```
+
+---
 
 ## Venda online de ingressos (Mercado Pago, sandbox)
 
