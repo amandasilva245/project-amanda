@@ -29,6 +29,7 @@ def system_info(db: Session = Depends(get_db), current_user: User = Depends(get_
         database = "indisponível"
 
     info = {
+        "demo": settings.DEMO_MODE,
         "app_name": settings.APP_NAME,
         "version": settings.APP_VERSION,
         "api": "ok",
@@ -44,3 +45,20 @@ def system_info(db: Session = Depends(get_db), current_user: User = Depends(get_
             "docs_enabled": settings.ENVIRONMENT != "production",
         })
     return info
+
+
+# Contas de demonstração exibidas na tela de login (só em DEMO_MODE; nunca a senha)
+DEMO_ACCOUNTS = [
+    {"email": "admin@curtain.example", "role": "admin", "name": "Beatriz Valença"},
+    {"email": "producao@curtain.example", "role": "producer", "name": "Otávio Rangel"},
+    {"email": "financeiro@curtain.example", "role": "financial_manager", "name": "Lúcia Fontoura"},
+    {"email": "direcao@curtain.example", "role": "director", "name": "Helena Prado"},
+    {"email": "tecnica@curtain.example", "role": "technician", "name": "Rafaela Couto"},
+    {"email": "elenco@curtain.example", "role": "actor", "name": "Caio Albuquerque"},
+]
+
+
+@router.get("/mode")
+def system_mode():
+    """Público: diz se este é o ambiente de demonstração (para o aviso na tela)."""
+    return {"demo": settings.DEMO_MODE, "accounts": DEMO_ACCOUNTS if settings.DEMO_MODE else []}
