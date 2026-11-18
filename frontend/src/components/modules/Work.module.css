@@ -72,6 +72,7 @@
 .cardActions { display: inline-flex; }
 .cardTitle { margin: 0; font-weight: 500; display: flex; gap: 6px; align-items: flex-start; }
 .cardTitle svg { color: var(--success); margin-top: 3px; flex-shrink: 0; }
+.cardDesc { margin: 0; font-size: var(--text-xs); color: var(--text-muted); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .cardMeta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-2); align-items: center; }
 .assignee { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--text-secondary); }
 .late { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs); color: var(--error); font-weight: 500; }

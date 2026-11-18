@@ -142,6 +142,7 @@ export default function TaskPanel({ productionId, productions = [] }) {
                         {t.status === 'done' && <CheckCircle2 size={14} aria-hidden="true" />} {t.title}
                       </p>
                       {!productionId && <p className={styles.sub}>{t.production_title}</p>}
+                      {t.description && <p className={styles.cardDesc} title={t.description}>{t.description}</p>}
                       <div className={styles.cardMeta}>
                         {t.assignee ? (
                           <span className={styles.assignee}><Avatar name={t.assignee.full_name} size="xs" /> {t.assignee.full_name}</span>
