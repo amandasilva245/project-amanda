@@ -16,4 +16,6 @@ RUN chmod +x entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["sh", "entrypoint.sh"]
+# Remove um eventual "\r" (fim de linha do Windows) antes de executar: com o
+# código montado do Windows (./backend:/app), o script pode chegar em CRLF.
+CMD ["sh", "-c", "tr -d '\\r' < entrypoint.sh > /tmp/entrypoint.sh && exec sh /tmp/entrypoint.sh"]
