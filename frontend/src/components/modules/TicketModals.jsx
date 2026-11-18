@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import TicketQR from '@/components/ui/TicketQR'
 import { format } from 'date-fns'
 import Modal from '@/components/ui/Modal'
 import Input from '@/components/ui/Input'
@@ -154,11 +155,12 @@ export function SellModal({ open, onClose, batch, production }) {
         <div className={f.form}>
           <p className={styles.soldIntro}>
             {sold.length === 1 ? 'Código do ingresso' : `Códigos dos ${sold.length} ingressos`} para {sold[0].buyer_name}.
-            Informe ao comprador: ele será pedido na entrada.
+            Mostre o QR Code ou informe o código ao comprador: ele será pedido na entrada.
           </p>
           <ul className={styles.codeList}>
             {sold.map((t) => (
               <li key={t.id} className={styles.codeItem}>
+                <TicketQR code={t.code} size={88} />
                 <span className={styles.code}>{t.code}</span>
                 <StatusBadge status={t.status} />
               </li>

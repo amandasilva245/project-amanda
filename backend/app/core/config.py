@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
+    # Ambiente de demonstração (banca): mostra o aviso "dados fictícios" e
+    # libera o script demo.py. Só funciona com um banco cujo nome termina em "_demo".
+    DEMO_MODE: bool = False
     # Fuso usado em textos gerados pelo servidor (ex.: "já utilizado às 20:15")
     APP_TIMEZONE: str = "America/Sao_Paulo"
 

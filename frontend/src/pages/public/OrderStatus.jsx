@@ -6,6 +6,7 @@ import { CheckCircle2, Clock, XCircle, AlertTriangle, RefreshCw } from 'lucide-r
 import { usePublicStore } from '@/store/publicStore'
 import Button from '@/components/ui/Button'
 import { fmtBRL } from '@/utils/labels'
+import TicketQR from '@/components/ui/TicketQR'
 import PublicLayout from './PublicLayout'
 import styles from './Public.module.css'
 
@@ -102,6 +103,7 @@ export default function OrderStatus() {
           <ul className={styles.codes} aria-label="Códigos dos ingressos">
             {order.tickets.map((t, i) => (
               <li key={t.code} className={styles.code}>
+                <TicketQR code={t.code} size={148} />
                 <span className={styles.codeLabel}>Ingresso {i + 1}{t.status === 'used' ? ' · utilizado' : ''}</span>
                 <span className={styles.codeValue}>{t.code}</span>
               </li>

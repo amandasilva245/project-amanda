@@ -1,10 +1,12 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, Theater, Users, DollarSign,
-  Ticket, BarChart3, Settings, LogOut, ChevronRight, CalendarDays,
+  Ticket, BarChart3, Settings, LogOut, CalendarDays,
+  Landmark, ListChecks, Shirt, BookOpen,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { ROLES } from '@/utils/permissions'
+import { USER_ROLES } from '@/utils/labels'
 import { Crest, Flourish } from '@/components/ui/Ornament'
 import styles from './Sidebar.module.css'
 
@@ -12,31 +14,34 @@ const NAV_SECTIONS = [
   {
     id: 'overview',
     items: [
-      { to: '/', icon: LayoutDashboard, label: 'Overview', exact: true },
+      { to: '/', icon: LayoutDashboard, label: 'Visão geral', exact: true },
     ],
   },
   {
     id: 'stage',
-    label: 'Stage',
+    label: 'Palco',
     items: [
-      { to: '/productions', icon: Theater, label: 'Productions' },
+      { to: '/productions', icon: Theater, label: 'Produções' },
       { to: '/agenda', icon: CalendarDays, label: 'Agenda' },
+      { to: '/tasks', icon: ListChecks, label: 'Tarefas' },
+      { to: '/resources', icon: Shirt, label: 'Recursos' },
     ],
   },
   {
     id: 'company',
-    label: 'Company',
+    label: 'Companhia',
     items: [
-      { to: '/cast', icon: Users, label: 'Cast & Crew', roles: ROLES.PEOPLE_DIRECTORY },
+      { to: '/companies', icon: Landmark, label: 'Companhias' },
+      { to: '/cast', icon: Users, label: 'Elenco e equipe', roles: ROLES.PEOPLE_DIRECTORY },
     ],
   },
   {
     id: 'business',
-    label: 'Business',
+    label: 'Negócios',
     items: [
       { to: '/finance', icon: DollarSign, label: 'Financeiro', roles: ROLES.FINANCE_GLOBAL },
       { to: '/tickets', icon: Ticket, label: 'Bilheteria', roles: ROLES.TICKETS_CHECKIN },
-      { to: '/insights', icon: BarChart3, label: 'Insights', roles: ROLES.INSIGHTS },
+      { to: '/insights', icon: BarChart3, label: 'Indicadores', roles: ROLES.INSIGHTS },
     ],
   },
 ]
@@ -79,7 +84,7 @@ export default function Sidebar() {
         </div>
         <div className={styles.logoText}>
           <span className={styles.logoName}>Curtain</span>
-          <span className={styles.logoTagline}>Operations</span>
+          <span className={styles.logoTagline}>Gestão teatral</span>
         </div>
       </div>
 
@@ -101,6 +106,10 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className={styles.footer}>
+        <NavLink to="/ajuda" className={styles.footerItem}>
+          <BookOpen size={15} strokeWidth={1.75} />
+          <span>Ajuda e manual</span>
+        </NavLink>
         <NavLink to="/settings" className={styles.footerItem}>
           <Settings size={15} strokeWidth={1.75} />
           <span>Configurações</span>
@@ -114,13 +123,13 @@ export default function Sidebar() {
           </div>
           <div className={styles.userInfo}>
             <span className={styles.userName}>{user?.full_name}</span>
-            <span className={styles.userRole}>{user?.role?.replace('_', ' ')}</span>
+            <span className={styles.userRole}>{USER_ROLES[user?.role] ?? user?.role}</span>
           </div>
           <button
             onClick={logout}
             className={styles.logoutBtn}
-            aria-label="Sign out"
-            title="Sign out"
+            aria-label="Sair"
+            title="Sair"
           >
             <LogOut size={14} strokeWidth={1.75} />
           </button>

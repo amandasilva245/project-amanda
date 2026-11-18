@@ -79,7 +79,48 @@ export const TICKET_STATUS = {
   cancelled: 'Cancelado',
 }
 
+export const USER_ROLES = {
+  admin: 'Administrador(a)',
+  producer: 'Produtor(a)',
+  financial_manager: 'Gestor(a) financeiro(a)',
+  director: 'Diretor(a)',
+  technician: 'Técnico(a)',
+  actor: 'Ator / Atriz',
+}
+
+export const RESOURCE_TYPES = {
+  costume: 'Figurino',
+  set: 'Cenário',
+  equipment: 'Equipamento',
+  prop: 'Objeto de cena',
+  other: 'Outro',
+}
+
+export const RESOURCE_STATUS = {
+  planned: 'Previsto',
+  in_progress: 'Em confecção',
+  available: 'Disponível',
+  in_use: 'Em uso',
+  maintenance: 'Em manutenção',
+}
+
+export const TASK_STATUS = {
+  todo: 'A fazer',
+  in_progress: 'Em andamento',
+  done: 'Concluída',
+}
+
+export const TASK_PRIORITY = {
+  high: 'Alta',
+  medium: 'Média',
+  low: 'Baixa',
+}
+
 export const options = {
+  resourceTypes: toOptions(RESOURCE_TYPES),
+  resourceStatus: toOptions(RESOURCE_STATUS),
+  taskStatus: toOptions(TASK_STATUS),
+  taskPriority: toOptions(TASK_PRIORITY),
   productionStatus: toOptions(PRODUCTION_STATUS),
   genres: toOptions(GENRES),
   departments: toOptions(DEPARTMENTS),
@@ -109,3 +150,14 @@ export const fmtBRL = (v, digits = 2) =>
     : new Intl.NumberFormat('pt-BR', {
         style: 'currency', currency: 'BRL', minimumFractionDigits: digits, maximumFractionDigits: digits,
       }).format(Number(v))
+
+/** "2026-11-20" → "20/11/2026" sem conversão de fuso. */
+export const fmtDay = (d) => (d ? d.split('-').reverse().join('/') : '—')
+
+/** 95 → "1h35" */
+export const fmtDuration = (min) => {
+  if (!min) return '—'
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  return h ? `${h}h${m ? String(m).padStart(2, '0') : ''}` : `${m} min`
+}

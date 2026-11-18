@@ -62,6 +62,8 @@ class Production(Base):
     color_accent = Column(String(7), nullable=True, default="#A9874A")
 
     budget_total = Column(Numeric(12, 2), nullable=True, default=0)
+    duration_minutes = Column(Integer, nullable=True)
+    company_id = Column(String(36), ForeignKey("companies.id", ondelete="SET NULL"), nullable=True, index=True)
 
     is_public = Column(Boolean, default=False)
 
@@ -84,6 +86,9 @@ class Production(Base):
     transactions = relationship("FinancialTransaction", back_populates="production", cascade="all, delete-orphan")
     ticket_batches = relationship("TicketBatch", back_populates="production", cascade="all, delete-orphan")
     schedules = relationship("Schedule", back_populates="production", cascade="all, delete-orphan")
+    company = relationship("Company", back_populates="productions")
+    resources = relationship("ProductionResource", back_populates="production", cascade="all, delete-orphan")
+    tasks = relationship("ProductionTask", back_populates="production", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Production '{self.title}' [{self.status}]>"

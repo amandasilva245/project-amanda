@@ -142,3 +142,21 @@
     letter-spacing: var(--tracking-wider);
   }
 }
+
+.notifCount {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--gold);
+  color: var(--cafe-deep);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  border: 1.5px solid var(--stage);
+}
+a.userPill { text-decoration: none; }

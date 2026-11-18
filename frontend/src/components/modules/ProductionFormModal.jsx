@@ -4,11 +4,13 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { Checkbox, Select, Textarea, formStyles as f } from '@/components/ui/Field'
 import { options } from '@/utils/labels'
+import { useWorkStore } from '@/store/workStore'
 
 const EMPTY = {
   title: '', subtitle: '', playwright: '', genre: '', status: 'development', synopsis: '',
   start_date: '', end_date: '', first_performance_date: '',
   venue: '', venue_capacity: '', budget_total: '', color_accent: '#A9874A', is_public: false,
+  duration_minutes: '', company_id: '',
 }
 
 const FIELDS = Object.keys(EMPTY).filter((k) => k !== 'is_public')
@@ -21,6 +23,9 @@ export default function ProductionFormModal({ open, onClose, initial, onSubmit, 
   const [form, setForm] = useState(EMPTY)
   const [error, setError] = useState(null)
   const editing = !!initial
+  const { companies, fetchCompanies } = useWorkStore()
+
+  useEffect(() => { if (open) fetchCompanies() }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -47,11 +52,17 @@ export default function ProductionFormModal({ open, onClose, initial, onSubmit, 
     if (form.venue_capacity && Number(form.venue_capacity) <= 0) {
       setError('A capacidade deve ser maior que zero.'); return
     }
+    if (form.duration_minutes && !(Number(form.duration_minutes) > 0)) {
+      setError('A duração deve ser maior que zero.'); return
+    }
     if (form.budget_total && Number(form.budget_total) < 0) {
       setError('O orçamento não pode ser negativo.'); return
     }
     const data = { ...form }
     if (data.venue_capacity) data.venue_capacity = Number(data.venue_capacity)
+    if (data.duration_minutes) data.duration_minutes = Number(data.duration_minutes)
+    // Na edição, "" remove a companhia; na criação, campo vazio é ignorado
+    if (!editing && !data.company_id) delete data.company_id
     const result = await onSubmit(data)
     if (result !== true) setError(result || 'Não foi possível salvar.')
   }
@@ -85,7 +96,12 @@ export default function ProductionFormModal({ open, onClose, initial, onSubmit, 
           <Input label="Capacidade" type="number" min="1" value={form.venue_capacity} onChange={set('venue_capacity')} />
           <Input label="Orçamento (R$)" type="number" min="0" step="0.01" value={form.budget_total} onChange={set('budget_total')} />
         </div>
-        <Input label="Cor de destaque" type="color" value={form.color_accent} onChange={set('color_accent')} />
+        <div className={f.row3}>
+          <Select label="Companhia" placeholder="Sem companhia" options={companies.map((c) => ({ value: c.id, label: c.name }))}
+            value={form.company_id} onChange={set('company_id')} />
+          <Input label="Duração (min)" type="number" min="1" value={form.duration_minutes} onChange={set('duration_minutes')} />
+          <Input label="Cor de destaque" type="color" value={form.color_accent} onChange={set('color_accent')} />
+        </div>
         <Checkbox
           label="Mostrar na página pública de ingressos (venda online)"
           checked={form.is_public}

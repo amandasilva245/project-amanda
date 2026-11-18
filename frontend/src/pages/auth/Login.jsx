@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, FlaskConical } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
+import { useSystemMode } from '@/hooks/useSystemMode'
+import { USER_ROLES } from '@/utils/labels'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { Crest, Flourish } from '@/components/ui/Ornament'
@@ -16,12 +18,13 @@ export default function Login() {
   const [password, setPassword]   = useState('')
   const [showPass, setShowPass]   = useState(false)
   const [fieldErrors, setErrors]  = useState({})
+  const { demo, accounts } = useSystemMode()
 
   const validate = () => {
     const errs = {}
-    if (!email) errs.email = 'Email is required'
-    else if (!/^\S+@\S+\.\S+$/.test(email.trim())) errs.email = 'Enter a valid email'
-    if (!password) errs.password = 'Password is required'
+    if (!email) errs.email = 'Informe o e-mail'
+    else if (!/^\S+@\S+\.\S+$/.test(email.trim())) errs.email = 'Digite um e-mail válido'
+    if (!password) errs.password = 'Informe a senha'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -52,7 +55,7 @@ export default function Login() {
           <div className={styles.brandMark}><Crest size={52} /></div>
           <div>
             <h1 className={styles.brandName}>Curtain</h1>
-            <p className={styles.brandTagline}>Theatrical Operations Platform</p>
+            <p className={styles.brandTagline}>Gestão teatral</p>
           </div>
         </div>
 
@@ -61,15 +64,15 @@ export default function Login() {
         {/* Form */}
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
           <div className={styles.formHeader}>
-            <h2 className={styles.formTitle}>Welcome back</h2>
-            <p className={styles.formSubtitle}>Sign in to your workspace</p>
+            <h2 className={styles.formTitle}>Bem-vindo(a)</h2>
+            <p className={styles.formSubtitle}>Entre para acessar o seu espaço</p>
           </div>
 
           <div className={styles.fields}>
             <Input
-              label="Email address"
+              label="E-mail"
               type="email"
-              placeholder="you@company.com"
+              placeholder="voce@companhia.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               leftIcon={Mail}
@@ -79,7 +82,7 @@ export default function Login() {
             />
 
             <Input
-              label="Password"
+              label="Senha"
               type={showPass ? 'text' : 'password'}
               placeholder="••••••••"
               value={password}
@@ -92,7 +95,7 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPass((v) => !v)}
                   className={styles.eyeBtn}
-                  aria-label={showPass ? 'Hide password' : 'Show password'}
+                  aria-label={showPass ? 'Ocultar senha' : 'Mostrar senha'}
                 >
                   {showPass
                     ? <EyeOff size={14} strokeWidth={1.75} />
@@ -120,12 +123,35 @@ export default function Login() {
             loading={loading}
             className={styles.submitBtn}
           >
-            Sign in
+            Entrar
           </Button>
         </form>
 
+        {demo && accounts.length > 0 && (
+          <div className={styles.demoBox}>
+            <p className={styles.demoTitle}>
+              <FlaskConical size={13} strokeWidth={1.75} aria-hidden="true" />
+              Ambiente de demonstração · dados fictícios
+            </p>
+            <p className={styles.demoHint}>
+              Escolha um perfil para preencher o e-mail. A senha é a da demonstração.
+            </p>
+            <ul className={styles.demoList}>
+              {accounts.map((a) => (
+                <li key={a.email}>
+                  <button type="button" className={styles.demoAccount}
+                    onClick={() => { setEmail(a.email); setErrors({}) }}>
+                    <span className={styles.demoRole}>{USER_ROLES[a.role] ?? a.role}</span>
+                    <span className={styles.demoEmail}>{a.email}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <p className={styles.footer}>
-          © {new Date().getFullYear()} Curtain — All rights reserved
+          © {new Date().getFullYear()} Curtain · Gestão teatral
         </p>
       </motion.div>
     </div>

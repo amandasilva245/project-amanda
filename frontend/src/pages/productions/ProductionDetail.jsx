@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Calendar, MapPin, DollarSign, Edit, Trash2, UserPlus, Pencil, X } from 'lucide-react'
+import { ArrowLeft, Calendar, MapPin, DollarSign, Edit, Trash2, UserPlus, Pencil, X, Clock, Landmark } from 'lucide-react'
 import { format } from 'date-fns'
 import { useProductionStore } from '@/store/productionStore'
 import { useAuthStore } from '@/store/authStore'
@@ -13,9 +13,11 @@ import ProductionFormModal from '@/components/modules/ProductionFormModal'
 import ParticipantModal from '@/components/modules/ParticipantModal'
 import ProductionSchedule from '@/components/modules/ProductionSchedule'
 import ProductionFinance from '@/components/modules/ProductionFinance'
+import ResourcePanel from '@/components/modules/ResourcePanel'
+import TaskPanel from '@/components/modules/TaskPanel'
 import { parseDate } from '@/utils/helpers'
 import { can } from '@/utils/permissions'
-import { DEPARTMENTS, GENRES, fmtBRL } from '@/utils/labels'
+import { DEPARTMENTS, GENRES, fmtBRL, fmtDuration } from '@/utils/labels'
 import styles from './ProductionDetail.module.css'
 
 const DEPT_COLORS = {
@@ -122,6 +124,8 @@ export default function ProductionDetail() {
     { key: 'overview', label: 'Visão geral' },
     { key: 'cast', label: 'Companhia' },
     { key: 'schedule', label: 'Agenda' },
+    { key: 'tasks', label: 'Tarefas' },
+    { key: 'resources', label: 'Recursos' },
     ...(can(user, 'FINANCE_WRITE') ? [{ key: 'finance', label: 'Financeiro' }] : []),
   ]
 
@@ -168,11 +172,22 @@ export default function ProductionDetail() {
           {prod.playwright && (
             <p className={styles.heroPlaywright}>de {prod.playwright}</p>
           )}
+          {prod.company && (
+            <Link to={`/productions?company=${prod.company.id}`} className={styles.heroCompany}>
+              <Landmark size={13} strokeWidth={1.75} aria-hidden="true" /> {prod.company.name}
+            </Link>
+          )}
           {prod.synopsis && (
             <p className={styles.heroSynopsis}>{prod.synopsis}</p>
           )}
 
           <div className={styles.heroMeta}>
+            {prod.duration_minutes && (
+              <span className={styles.metaItem}>
+                <Clock size={13} strokeWidth={1.75} />
+                {fmtDuration(prod.duration_minutes)}
+              </span>
+            )}
             {prod.venue && (
               <span className={styles.metaItem}>
                 <MapPin size={13} strokeWidth={1.75} />
@@ -372,6 +387,10 @@ export default function ProductionDetail() {
       )}
 
       {activeTab === 'schedule' && <ProductionSchedule production={prod} />}
+
+      {activeTab === 'tasks' && <TaskPanel productionId={prod.id} />}
+
+      {activeTab === 'resources' && <ResourcePanel productionId={prod.id} />}
 
       {activeTab === 'finance' && <ProductionFinance production={prod} />}
 
