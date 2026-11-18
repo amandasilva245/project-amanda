@@ -50,3 +50,18 @@ def test_demo_accounts_can_log_in(client, db, monkeypatch):
         "email": mode["accounts"][0]["email"], "password": "Senha-de-teste-1",
     })
     assert res.status_code == 200, res.text
+
+
+def test_attendees_come_in_stable_alphabetical_order(client, db, monkeypatch):
+    from app.core.security import create_access_token
+    from app.models.schedule import Schedule
+
+    demo.Seeder(db).run("Senha-de-teste-1")
+    admin = db.query(User).filter(User.email == "admin@curtain.example").one()
+    headers = {"Authorization": f"Bearer {create_access_token(admin.id)}"}
+    ev = next(s for s in db.query(Schedule).all() if len(s.attendees) > 3 and not s.is_cancelled)
+    names = [a["user"]["full_name"] for a in client.get(f"/api/v1/schedules/{ev.id}", headers=headers).json()["attendees"]]
+    assert names == sorted(names, key=str.lower)
+    first = ev.attendees[0]
+    res = client.patch(f"/api/v1/schedules/{ev.id}/attendance/{first.user_id}", json={"status": "absent"}, headers=headers)
+    assert [a["user"]["full_name"] for a in res.json()["attendees"]] == names

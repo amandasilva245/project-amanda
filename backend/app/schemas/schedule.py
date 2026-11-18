@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.models.schedule import AttendanceStatus, ScheduleType
 from app.schemas.user import UserSummary
@@ -85,6 +85,12 @@ class ScheduleResponse(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+    @field_validator("attendees")
+    @classmethod
+    def _stable_order(cls, v):
+        # Ordem alfabética fixa: sem ela a lista "pulava" a cada alteração de presença
+        return sorted(v, key=lambda a: (a.user.full_name or "").lower())
 
 
 class ConflictItem(BaseModel):

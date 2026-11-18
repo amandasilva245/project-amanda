@@ -841,7 +841,7 @@ def check(db) -> list:
                   .filter(FinancialTransaction.production_id == p.id,
                           FinancialTransaction.category == TransactionCategory.TICKET_SALES).scalar())
         if D(paid) != D(booked):
-            problems.append(f"{p.title}: bilheteria R$ {paid} ≠ lançado no financeiro R$ {booked}")
+            problems.append(f"{p.title}: bilheteria R$ {paid} ≠ lançado no financeiro R$ {booked} (normal depois de vendas feitas durante a apresentação; 'python demo.py reset' restaura)")
     orphans = db.execute(text(
         "SELECT count(*) FROM production_participants pp LEFT JOIN users u ON u.id = pp.user_id WHERE u.id IS NULL"
     )).scalar()
