@@ -33,7 +33,7 @@ def _get_visible(service: ScheduleService, schedule_id: str, user: User):
     if not schedule:
         raise HTTPException(status_code=404, detail="Evento não encontrado.")
     if user.role in PARTICIPANT_ONLY and not service.can_view(schedule, user.id):
-        raise HTTPException(status_code=403, detail="Access denied")
+        raise HTTPException(status_code=403, detail="Acesso negado.")
     return schedule
 
 
@@ -159,7 +159,7 @@ def set_attendance(
     service = ScheduleService(db)
     schedule = _get_visible(service, schedule_id, current_user)
     if current_user.role not in SCHEDULE_WRITE and current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Access denied")
+        raise HTTPException(status_code=403, detail="Acesso negado.")
     if schedule.is_cancelled:
         raise HTTPException(status_code=422, detail="Evento cancelado.")
     try:

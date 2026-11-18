@@ -39,7 +39,7 @@ def list_productions(
         try:
             status_enum = ProductionStatus(status)
         except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid status value")
+            raise HTTPException(status_code=400, detail="Status inválido.")
 
     # Atores e técnicos só veem as produções de que participam (RF11),
     # mas com os mesmos filtros e paginação dos demais papéis.
@@ -80,13 +80,13 @@ def get_production(
     service = ProductionService(db)
     production = service.get_by_id(production_id)
     if not production:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Production not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produção não encontrada.")
 
     # Atores e técnicos só veem produções de que participam (RF11)
     if current_user.role in PARTICIPANT_ONLY:
         participant_ids = {p.user_id for p in production.participants}
         if current_user.id not in participant_ids:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acesso negado.")
 
     return ProductionDetailResponse.model_validate(production)
 
@@ -101,7 +101,7 @@ def update_production(
     service = ProductionService(db)
     production = service.get_by_id(production_id)
     if not production:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Production not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produção não encontrada.")
 
     try:
         updated = service.update(production, payload)
@@ -119,7 +119,7 @@ def delete_production(
     service = ProductionService(db)
     production = service.get_by_id(production_id)
     if not production:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Production not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produção não encontrada.")
     try:
         service.delete(production)
     except ValueError as exc:
@@ -136,7 +136,7 @@ def add_participant(
     service = ProductionService(db)
     production = service.get_by_id(production_id)
     if not production:
-        raise HTTPException(status_code=404, detail="Production not found")
+        raise HTTPException(status_code=404, detail="Produção não encontrada.")
 
     try:
         participant = service.add_participant(production, payload)
@@ -159,7 +159,7 @@ def update_participant(
     service = ProductionService(db)
     participant = service.get_participant(participant_id, production_id)
     if not participant:
-        raise HTTPException(status_code=404, detail="Participant not found")
+        raise HTTPException(status_code=404, detail="Participante não encontrado.")
     try:
         participant = service.update_participant(participant, payload)
     except ValueError as exc:
@@ -177,4 +177,4 @@ def remove_participant(
     service = ProductionService(db)
     removed = service.remove_participant(participant_id, production_id)
     if not removed:
-        raise HTTPException(status_code=404, detail="Participant not found")
+        raise HTTPException(status_code=404, detail="Participante não encontrado.")

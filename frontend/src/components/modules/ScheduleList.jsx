@@ -79,6 +79,7 @@ export default function ScheduleList({ events, onEdit, showProduction = false, e
                       {ev.location && <span><MapPin size={12} strokeWidth={1.75} />{ev.location}</span>}
                     </div>
                     {ev.description && <p className={styles.eventDesc}>{ev.description}</p>}
+                    {canWrite && ev.notes && <p className={styles.eventDesc}><strong>Notas internas:</strong> {ev.notes}</p>}
                     {ev.is_cancelled && ev.cancel_reason && (
                       <p className={styles.eventDesc}>Motivo: {ev.cancel_reason}</p>
                     )}

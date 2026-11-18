@@ -146,7 +146,7 @@ export default function Settings() {
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Informações do Perfil</h2>
+                <h2 className={styles.sectionTitle}>Informações do perfil</h2>
                 <p className={styles.sectionDesc}>
                   Atualize seu nome, telefone e apresentação visível no sistema.
                 </p>
@@ -154,7 +154,7 @@ export default function Settings() {
 
               <form onSubmit={saveProfile} className={styles.form}>
                 <Input
-                  label="Nome Completo"
+                  label="Nome completo"
                   value={profile.full_name}
                   onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
                   placeholder="Seu nome completo"
@@ -194,7 +194,7 @@ export default function Settings() {
 
                 <div className={styles.formActions}>
                   <Button variant="primary" type="submit" loading={profileSaving} leftIcon={Save}>
-                    Salvar Perfil
+                    Salvar perfil
                   </Button>
                 </div>
               </form>
@@ -219,7 +219,7 @@ export default function Settings() {
 
               <form onSubmit={savePassword} className={styles.form}>
                 <Input
-                  label="Senha Atual"
+                  label="Senha atual"
                   type={showPwd.current ? 'text' : 'password'}
                   value={passwords.current}
                   onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
@@ -232,11 +232,11 @@ export default function Settings() {
                 />
 
                 <Input
-                  label="Nova Senha"
+                  label="Nova senha"
                   type={showPwd.newPass ? 'text' : 'password'}
                   value={passwords.newPass}
                   onChange={(e) => setPasswords({ ...passwords, newPass: e.target.value })}
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Mínimo 8, com maiúscula e número"
                   rightElement={
                     <button type="button" className={styles.eyeBtn} onClick={() => setShowPwd((s) => ({ ...s, newPass: !s.newPass }))}>
                       {showPwd.newPass ? <EyeOff size={14} strokeWidth={1.75} /> : <Eye size={14} strokeWidth={1.75} />}
@@ -245,7 +245,7 @@ export default function Settings() {
                 />
 
                 <Input
-                  label="Confirmar Nova Senha"
+                  label="Confirmar nova senha"
                   type={showPwd.confirm ? 'text' : 'password'}
                   value={passwords.confirm}
                   onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
@@ -265,17 +265,17 @@ export default function Settings() {
 
                 <div className={styles.formActions}>
                   <Button variant="primary" type="submit" loading={pwdSaving} leftIcon={Lock}>
-                    Alterar Senha
+                    Alterar senha
                   </Button>
                 </div>
               </form>
 
               <div className={styles.dangerZone}>
-                <p className={styles.dangerTitle}>Zona Perigosa</p>
+                <p className={styles.dangerTitle}>Encerrar acesso</p>
                 <div className={styles.dangerRow}>
                   <div>
                     <p className={styles.dangerLabel}>Encerrar sessão</p>
-                    <p className={styles.dangerDesc}>Você será desconectado de todos os dispositivos.</p>
+                    <p className={styles.dangerDesc}>Você sairá de todos os dispositivos.</p>
                   </div>
                   <Button variant="ghost" onClick={logout} className={styles.dangerBtn}>
                     Sair
@@ -295,7 +295,7 @@ export default function Settings() {
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Sobre o Sistema</h2>
+                <h2 className={styles.sectionTitle}>Sobre o sistema</h2>
                 <p className={styles.sectionDesc}>Informações da plataforma Curtain.</p>
               </div>
 

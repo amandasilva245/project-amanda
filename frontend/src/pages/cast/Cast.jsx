@@ -19,7 +19,7 @@ const ROLE_OPTIONS = [
   { value: 'director',          label: 'Diretor(a)' },
   { value: 'technician',        label: 'Técnico(a)' },
   { value: 'producer',          label: 'Produtor(a)' },
-  { value: 'financial_manager', label: 'Gestor(a) Financeiro' },
+  { value: 'financial_manager', label: 'Gestor(a) financeiro(a)' },
 ]
 // Edição pelo admin inclui o próprio perfil de administrador (RF04)
 const EDIT_ROLE_OPTIONS = [...ROLE_OPTIONS, { value: 'admin', label: 'Administrador(a)' }]
@@ -74,6 +74,10 @@ export default function Cast() {
     !search ||
     m.full_name?.toLowerCase().includes(search.toLowerCase()) ||
     m.email?.toLowerCase().includes(search.toLowerCase())
+  )
+
+  const shownProductions = productions.filter((p) =>
+    !search || p.title.toLowerCase().includes(search.toLowerCase())
   )
 
   const resetAndClose = () => {
@@ -141,19 +145,13 @@ export default function Cast() {
     fetchProductions() // refresh productions to update participant counts
   }
 
-  // For "By Production" tab: show basic production cards with link to detail
-  const productionsWithMembers = productions.filter((p) => {
-    if (!activeTab) return true
-    return true // show all in by-production view; participant details are in production detail
-  })
-
   return (
     <div className={styles.page}>
       {/* Header */}
       <div className={styles.header}>
         <div>
           <p className="overline">Companhia</p>
-          <h1 className={styles.title}>Elenco & Equipe</h1>
+          <h1 className={styles.title}>Elenco e equipe</h1>
         </div>
         <div className={styles.headerActions}>
           {activeTab === 'people' && (
@@ -161,7 +159,7 @@ export default function Cast() {
           )}
           {isAdmin && (
             <Button variant="primary" leftIcon={UserPlus} onClick={() => { resetAndClose(); setShowAdd(true) }}>
-              Adicionar Pessoa
+              Adicionar pessoa
             </Button>
           )}
         </div>
@@ -179,7 +177,7 @@ export default function Cast() {
         <div className={styles.tabs}>
           {[
             { key: 'people',     label: 'Pessoas',          icon: Users   },
-            { key: 'by_prod',    label: 'Por Produção',     icon: Theater },
+            { key: 'by_prod',    label: 'Por produção',     icon: Theater },
           ].map((t) => (
             <button
               key={t.key}
@@ -254,7 +252,7 @@ export default function Cast() {
               </p>
               {!search && !error && isAdmin && (
                 <Button variant="outline" leftIcon={UserPlus} onClick={() => { resetAndClose(); setShowAdd(true) }}>
-                  Adicionar Primeiro Membro
+                  Cadastrar a primeira pessoa
                 </Button>
               )}
             </div>
@@ -265,9 +263,7 @@ export default function Cast() {
       {/* ── By Production Tab ── */}
       {activeTab === 'by_prod' && (
         <div className={styles.prodGroups}>
-          {productions
-            .filter((p) => !search || p.title.toLowerCase().includes(search.toLowerCase()))
-            .map((prod) => (
+          {shownProductions.map((prod) => (
               <motion.div
                 key={prod.id}
                 className={styles.prodGroup}
@@ -300,10 +296,12 @@ export default function Cast() {
               </motion.div>
             ))}
 
-          {productions.length === 0 && (
+          {shownProductions.length === 0 && (
             <div className={styles.empty}>
               <Theater size={32} strokeWidth={1} style={{ color: 'var(--text-disabled)' }} />
-              <p className={styles.emptyTitle}>Nenhuma produção cadastrada.</p>
+              <p className={styles.emptyTitle}>
+                {productions.length ? 'Nenhuma produção encontrada.' : 'Nenhuma produção cadastrada.'}
+              </p>
             </div>
           )}
         </div>
@@ -313,11 +311,11 @@ export default function Cast() {
       <Modal
         open={showAdd}
         onClose={resetAndClose}
-        title={step === 1 ? 'Nova Pessoa' : 'Atribuir à Produção'}
+        title={step === 1 ? 'Nova pessoa' : 'Vincular a uma produção'}
         description={
           step === 1
             ? 'Cadastrar novo membro da equipe ou elenco.'
-            : 'Opcional: vincular à uma produção já neste cadastro.'
+            : 'Opcional: vincular a uma produção já neste cadastro.'
         }
         size="md"
       >
@@ -326,7 +324,7 @@ export default function Cast() {
           {step === 1 && (
             <>
               <Input
-                label="Nome Completo *"
+                label="Nome completo *"
                 placeholder="Nome do artista ou técnico"
                 value={form.full_name}
                 onChange={(e) => setForm({ ...form, full_name: e.target.value })}
@@ -352,7 +350,7 @@ export default function Cast() {
 
               <div className={styles.formRow}>
                 <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>Função / Cargo *</label>
+                  <label className={styles.fieldLabel}>Perfil de acesso *</label>
                   <select
                     className={styles.select}
                     value={form.role}
@@ -373,7 +371,7 @@ export default function Cast() {
               </div>
 
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Bio / Notas</label>
+                <label className={styles.fieldLabel}>Bio / notas</label>
                 <textarea
                   className={styles.textarea}
                   placeholder="Experiência, observações relevantes…"
@@ -416,7 +414,7 @@ export default function Cast() {
                 <>
                   <div className={styles.formRow}>
                     <Input
-                      label="Papel / Título na Produção *"
+                      label="Função na produção *"
                       placeholder="ex: Hamlet, Diretor de Arte"
                       value={assign.role_title}
                       onChange={(e) => setAssign({ ...assign, role_title: e.target.value })}
@@ -435,7 +433,7 @@ export default function Cast() {
                     </div>
                   </div>
                   <Input
-                    label="Nome do Personagem (se ator)"
+                    label="Personagem (se for do elenco)"
                     placeholder="ex: Hamlet, Ofélia"
                     value={assign.character_name}
                     onChange={(e) => setAssign({ ...assign, character_name: e.target.value })}
@@ -508,7 +506,7 @@ function EditMemberModal({ member, onClose }) {
           <Input label="Telefone" value={form.phone} onChange={set('phone')} placeholder="+55 11 99999-0000" />
           <Select label="Perfil de acesso" value={form.role} onChange={set('role')} options={EDIT_ROLE_OPTIONS} disabled={isSelf} />
         </div>
-        <Textarea label="Bio / Notas" rows={3} value={form.bio} onChange={set('bio')} />
+        <Textarea label="Bio / notas" rows={3} value={form.bio} onChange={set('bio')} />
         <label className={styles.activeToggle}>
           <input type="checkbox" checked={form.is_active} onChange={set('is_active')} disabled={isSelf} />
           <span>

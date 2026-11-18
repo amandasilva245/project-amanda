@@ -169,6 +169,7 @@ export default function ProductionDetail() {
             )}
           </div>
           <h1 className={styles.heroTitle}>{prod.title}</h1>
+          {prod.subtitle && <p className={styles.heroSubtitle}>{prod.subtitle}</p>}
           {prod.playwright && (
             <p className={styles.heroPlaywright}>de {prod.playwright}</p>
           )}
@@ -348,6 +349,14 @@ export default function ProductionDetail() {
                           Cachê {fmtBRL(m.fee)} · pago {fmtBRL(m.fee_paid ?? 0)}
                         </span>
                       )}
+                      {canEdit && (m.start_date || m.end_date) && (
+                        <span className={styles.memberFee}>
+                          {m.start_date && m.end_date
+                            ? `De ${fmtDate(m.start_date)} a ${fmtDate(m.end_date)}`
+                            : m.start_date ? `A partir de ${fmtDate(m.start_date)}` : `Até ${fmtDate(m.end_date)}`}
+                        </span>
+                      )}
+                      {canEdit && m.notes && <span className={styles.memberNotes}>{m.notes}</span>}
                       {canEdit && (
                         <div className={styles.memberFlags}>
                           <button type="button" className={`${styles.flag} ${m.is_lead ? styles.flagOn : ''}`}

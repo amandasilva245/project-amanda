@@ -183,6 +183,7 @@ export default function ResourcePanel({ productionId, productions = [] }) {
                           <span className={styles.sub}>
                             {RESOURCE_TYPES[r.type]}{r.supplier ? ` · ${r.supplier}` : ''}{r.location ? ` · ${r.location}` : ''}
                           </span>
+                          {r.notes && <span className={styles.sub} title={r.notes}>Obs.: {r.notes}</span>}
                         </div>
                       </div>
                     </td>

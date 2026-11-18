@@ -75,9 +75,9 @@ export default function Finance() {
       {ins && (
         <div className={styles.metrics}>
           {[
-            { label: 'Total de Receitas', value: fmtCurrency(ins.total_income),  color: 'var(--success)', icon: TrendingUp  },
-            { label: 'Total de Despesas', value: fmtCurrency(ins.total_expense), color: 'var(--error)',   icon: TrendingDown },
-            { label: 'Saldo Líquido',     value: fmtCurrency(ins.net_balance),   color: netPositive ? 'var(--success)' : 'var(--error)' },
+            { label: 'Total de receitas', value: fmtCurrency(ins.total_income),  color: 'var(--success)', icon: TrendingUp  },
+            { label: 'Total de despesas', value: fmtCurrency(ins.total_expense), color: 'var(--error)',   icon: TrendingDown },
+            { label: 'Saldo líquido',     value: fmtCurrency(ins.net_balance),   color: netPositive ? 'var(--success)' : 'var(--error)' },
           ].map(({ label, value, color, icon: Icon }, i) => (
             <motion.div
               key={label}
@@ -96,7 +96,7 @@ export default function Finance() {
       {/* Tabs */}
       <div className={styles.tabs}>
         {[
-          { key: 'overview',      label: 'Visão Geral' },
+          { key: 'overview',      label: 'Visão geral' },
           { key: 'transactions',  label: 'Lançamentos' },
           { key: 'productions',   label: 'Produções' },
         ].map((t) => (
@@ -113,7 +113,7 @@ export default function Finance() {
       {activeTab === 'overview' && ins && (
         <div className={styles.overviewLayout}>
           <div className={styles.topProds}>
-            <p className="overline" style={{ marginBottom: 'var(--sp-4)' }}>Maiores Receitas — Produções</p>
+            <p className="overline" style={{ marginBottom: 'var(--sp-4)' }}>Maiores receitas por produção</p>
             <div className={styles.prodsList}>
               {(ins.top_productions ?? []).map((prod, i) => {
                 const pct = ins.total_income > 0 ? (prod.revenue / ins.total_income) * 100 : 0
