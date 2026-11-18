@@ -215,3 +215,72 @@
   .ambientBlob1, .ambientBlob2 { width: 14vw; }
   .card { padding: var(--sp-8) var(--sp-6) var(--sp-6); }
 }
+
+/* ── Contas de demonstração (só com DEMO_MODE) ───────────────── */
+.demoBox {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px dashed rgba(var(--gold-rgb), 0.4);
+  border-radius: 10px;
+  background: rgba(var(--gold-rgb), 0.05);
+}
+
+.demoTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+
+.demoHint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+}
+
+.demoList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+
+.demoAccount {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 7px 10px;
+  border: 1px solid rgba(var(--gold-rgb), 0.18);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.demoAccount:hover,
+.demoAccount:focus-visible {
+  border-color: rgba(var(--gold-rgb), 0.55);
+  background: rgba(var(--gold-rgb), 0.08);
+}
+
+.demoRole {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.demoEmail {
+  font-size: 11px;
+  opacity: 0.7;
+  word-break: break-all;
+}

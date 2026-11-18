@@ -50,7 +50,7 @@ export default function Modal({ open, onClose, title, description, children, siz
                 {title && <h2 className={styles.title}>{title}</h2>}
                 {description && <p className={styles.description}>{description}</p>}
               </div>
-              <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
+              <button className={styles.closeBtn} onClick={onClose} aria-label="Fechar">
                 <X size={16} strokeWidth={2} />
               </button>
             </div>

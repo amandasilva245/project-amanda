@@ -23,8 +23,8 @@ export default function Insights() {
     <div className={styles.page}>
       <div className={styles.header}>
         <div>
-          <p className="overline">Analytics</p>
-          <h1 className={styles.title}>Insights</h1>
+          <p className="overline">Negócios</p>
+          <h1 className={styles.title}>Indicadores</h1>
         </div>
       </div>
 
@@ -57,7 +57,8 @@ export default function Insights() {
                   tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
                 <Tooltip formatter={(v) => fmtBRL(v)}
                   contentStyle={{ background: 'var(--backdrop)', border: '1px solid var(--border-default)', borderRadius: '8px', fontSize: '12px', color: 'var(--text-primary)' }}
-                  cursor={{ fill: 'rgba(169,135,74,0.08)' }} />
+                  cursor={{ fill: 'rgba(169,135,74,0.08)' }}
+                labelFormatter={(d) => (d && d.length >= 10 ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : d)} />
                 <Legend wrapperStyle={{ fontSize: 11, color: 'var(--text-secondary)' }} />
                 <Bar dataKey="income" name="Receitas" stackId="a" fill="#9DBE8A" />
                 <Bar dataKey="expense" name="Despesas" stackId="a" fill="#C98A93" radius={[0, 3, 3, 0]} />
@@ -72,7 +73,7 @@ export default function Insights() {
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={occupancyTrends.slice(-10)} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(169,135,74,0.14)" vertical={false} />
-              <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
+              <XAxis dataKey="date" tickFormatter={(d) => (d && d.length >= 10 ? `${d.slice(8, 10)}/${d.slice(5, 7)}` : d)} axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} tickFormatter={(v) => `${v}%`} />
               <Tooltip
                 contentStyle={{
@@ -94,10 +95,10 @@ export default function Insights() {
       <div className={styles.aiCard}>
         <div className={styles.aiIcon}>✦</div>
         <div className={styles.aiContent}>
-          <p className={styles.aiTitle}>AI Insights — Coming Soon</p>
+          <p className={styles.aiTitle}>Trabalhos futuros · ainda não disponível</p>
           <p className={styles.aiText}>
-            Predictive audience analysis, cast scheduling optimization, and automated revenue forecasting
-            powered by machine learning. Planned for the next release.
+            Previsão de público, sugestão de escalas de ensaio e projeção de receita com aprendizado
+            de máquina estão previstas para uma próxima versão.
           </p>
         </div>
       </div>

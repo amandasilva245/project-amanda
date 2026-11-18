@@ -1,15 +1,16 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { format, differenceInDays, isAfter, isBefore } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { parseDate } from '@/utils/helpers'
 import styles from './ProductionTimeline.module.css'
 
 const PHASES = [
-  { key: 'development',    label: 'Dev',    color: 'var(--text-muted)' },
-  { key: 'pre_production', label: 'Pre',    color: 'var(--iris)' },
-  { key: 'rehearsal',      label: 'Rehearsal', color: 'var(--warning)' },
-  { key: 'performance',    label: 'Live',   color: 'var(--success)' },
-  { key: 'archived',       label: 'Archive',color: 'var(--scrim)' },
+  { key: 'development',    label: 'Desenvolvimento',    color: 'var(--text-muted)' },
+  { key: 'pre_production', label: 'Pré-produção',    color: 'var(--iris)' },
+  { key: 'rehearsal',      label: 'Ensaios', color: 'var(--warning)' },
+  { key: 'performance',    label: 'Em cartaz',   color: 'var(--success)' },
+  { key: 'archived',       label: 'Arquivada',color: 'var(--scrim)' },
 ]
 
 const STATUS_ORDER = PHASES.map((p) => p.key)
@@ -35,7 +36,7 @@ function PhaseBar({ production, totalDays, timelineStart }) {
       initial={{ scaleX: 0, originX: 0 }}
       animate={{ scaleX: 1 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-      title={`${production.title}: ${format(start, 'MMM d')} → ${format(end, 'MMM d')}`}
+      title={`${production.title}: ${format(start, 'd MMM', { locale: ptBR })} → ${format(end, 'd MMM', { locale: ptBR })}`}
     />
   )
 }
@@ -68,7 +69,7 @@ export default function ProductionTimeline({ productions = [] }) {
     const cursor = new Date(start.getFullYear(), start.getMonth(), 1)
     while (isBefore(cursor, end)) {
       const pct = Math.max(0, differenceInDays(cursor, start) / total) * 100
-      monthMarkers.push({ label: format(cursor, 'MMM'), pct })
+      monthMarkers.push({ label: format(cursor, 'MMM', { locale: ptBR }), pct })
       cursor.setMonth(cursor.getMonth() + 1)
     }
 

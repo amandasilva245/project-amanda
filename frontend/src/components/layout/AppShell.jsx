@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
+import DemoBanner from './DemoBanner'
 import styles from './AppShell.module.css'
 
 export default function AppShell() {
@@ -8,6 +9,7 @@ export default function AppShell() {
     <div className={styles.shell}>
       <Sidebar />
       <div className={styles.main}>
+        <DemoBanner />
         <TopBar />
         <main className={styles.content}>
           <Outlet />
