@@ -17,5 +17,24 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!--
+      VLibras (Governo Federal): tradução do conteúdo para Libras por avatar.
+      Fica fora do #root para ser carregado uma única vez e continuar na tela
+      em todas as rotas, inclusive login e páginas públicas. O script é
+      assíncrono para não atrasar a abertura do sistema; o avatar só é baixado
+      quando a pessoa clica no botão.
+    -->
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script
+      src="https://vlibras.gov.br/app/vlibras-plugin.js"
+      async
+      onload="if (window.VLibras) new window.VLibras.Widget('https://vlibras.gov.br/app')"
+    ></script>
   </body>
 </html>
