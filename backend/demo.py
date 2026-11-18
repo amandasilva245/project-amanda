@@ -212,7 +212,7 @@ class Seeder:
              "Numa cidade onde todos os relógios pararam no mesmo minuto, um velho relojoeiro recebe a visita da "
              "filha que partiu há vinte anos. Entre engrenagens e cartas nunca enviadas, os dois tentam consertar "
              "aquilo que nenhum ponteiro mede."),
-            ("cartas", "Cartas para Ninguém", None, "Aurora Nogueira", G.DRAMA, P.REHEARSAL, "lanterna",
+            ("cartas", "Cartas para Ninguém", "drama epistolar em três tempos", "Aurora Nogueira", G.DRAMA, P.REHEARSAL, "lanterna",
              T(-45), T(18), T(80), "Espaço Cênico Lanterna", 80, D("92000"), 80, "#7A2E37", False,
              "Três mulheres de gerações diferentes escrevem cartas a destinatários que já não existem. "
              "O espetáculo cruza as vozes em um único apartamento, ao longo de cinquenta anos."),
@@ -230,7 +230,7 @@ class Seeder:
              False,
              "O faroleiro de uma ilha esquecida recusa-se a apagar a luz depois que o porto é desativado. "
              "Ópera de câmara para quatro cantores e sexteto de cordas."),
-            ("mare_marco", "Maré de Março", None, "Joaquim Bezerra", G.DRAMA, P.ARCHIVED, "mare",
+            ("mare_marco", "Maré de Março", "drama da vila de pescadores", "Joaquim Bezerra", G.DRAMA, P.ARCHIVED, "mare",
              T(-260), T(-200), T(-150), "Teatro do Cais", 150, D("70000"), 85, "#5E6B4E", False,
              "Pescadores enfrentam a chegada de um grande empreendimento à vila. Montagem encerrada após "
              "temporada de sucesso e circulação por quatro cidades."),
@@ -243,7 +243,7 @@ class Seeder:
              "#E0A33A", True,
              "Um vendaval leva a lona de um circo pequenino. Para não cancelar a estreia, a trupe decide "
              "procurar a lona pelo mundo — e descobre que o picadeiro pode ser em qualquer lugar."),
-            ("ceia", "A Última Ceia dos Bonecos", None, "Rodrigo Esteves", G.EXPERIMENTAL, P.PRE_PRODUCTION,
+            ("ceia", "A Última Ceia dos Bonecos", "teatro de animação para adultos", "Rodrigo Esteves", G.EXPERIMENTAL, P.PRE_PRODUCTION,
              "atelie", T(-15), T(60), T(90), "Galpão Ateliê", 60, D("64000"), 75, "#6B3E5C", False,
              "Bonecos de um teatro de marionetes fechado se reúnem para um último jantar antes da demolição. "
              "Teatro de animação para adultos, com manipulação à vista."),
@@ -378,8 +378,35 @@ class Seeder:
                     user_id=self.users[person].id, role_title=role, department=dept, character_name=char,
                     fee=D(fee), fee_paid=D(paid).quantize(D("0.01")), start_date=prod.start_date,
                     end_date=prod.end_date, is_lead=lead, is_confirmed=True,
+                    notes=self.note(self.CREW_NOTES, f"{pkey}:{person}:{role}"),
                 )
         self.db.flush()
+
+    # Observações fictícias: escolhidas de forma estável pela chave (o seed é repetível)
+    @staticmethod
+    def note(options, key, chance=0.5):
+        r = random.Random(f"nota:{key}")
+        return r.choice(options) if r.random() < chance else None
+
+    CREW_NOTES = [
+        "Cachê pago em duas parcelas: metade na estreia e o restante no fim da temporada.",
+        "Indisponível às segundas-feiras (aulas na universidade).",
+        "Contrato assinado; aguardando nota fiscal da primeira parcela.",
+        "Pode cobrir ensaios extras aos sábados pela manhã.",
+        "Pediu dispensa no ensaio do dia 12 por consulta médica; já reposto.",
+        "Responsável também pela preparação vocal do elenco.",
+        "Mora fora da cidade: produção cobre o transporte nos dias de ensaio.",
+    ]
+    REHEARSAL_NOTES = [
+        "Trazer o figurino de ensaio e o texto marcado.",
+        "Chegar 30 minutos antes para aquecimento vocal.",
+        "Repassar as cenas 4 e 5 com a nova marcação.",
+        "Fotógrafo da divulgação acompanha a última hora.",
+        "Sala reservada até as 18h; desocupar no horário.",
+    ]
+    TECH_NOTES = "Afinação de luz a partir das 13h. Equipe técnica completa; elenco só às 15h."
+    DRESS_NOTES = "Ensaio corrido com figurino, luz e som de estreia. Sem interrupções."
+    MEETING_NOTES = "Pauta: cronograma da temporada, revisão do orçamento e divulgação."
 
     def members(self, pkey):
         return [person for person, *_ in self.CREW[pkey]]
@@ -411,7 +438,10 @@ class Seeder:
                 start, end = at(day, 14), at(day, 18)
                 sched = self.ensure(Schedule, f"{pkey}:{d}", production_id=prod.id, title=title, type=kind,
                                     description=f"{title} — {prod.title}", start_time=start, end_time=end,
-                                    location=place)
+                                    location=place,
+                                    notes=self.DRESS_NOTES if kind == S.DRESS_REHEARSAL else
+                                    self.TECH_NOTES if kind == S.TECH_RUN else
+                                    self.note(self.REHEARSAL_NOTES, f"{pkey}:{d}", 0.6))
                 for person in people:
                     if d < 0:
                         status = AttendanceStatus.ABSENT if self.rng.random() < 0.07 else AttendanceStatus.CONFIRMED
@@ -423,7 +453,7 @@ class Seeder:
             meet = self.ensure(Schedule, f"{pkey}:reuniao", production_id=prod.id, title="Reunião de produção",
                                type=S.MEETING, description="Cronograma, orçamento e pendências da semana.",
                                start_time=at(self.T(5), 10), end_time=at(self.T(5), 11, 30),
-                               location="Escritório da companhia")
+                               location="Escritório da companhia", notes=self.MEETING_NOTES)
             for person in people[:3]:
                 self.ensure(ScheduleParticipant, f"{pkey}:reuniao:{person}", schedule_id=meet.id,
                             user_id=self.users[person].id, status=AttendanceStatus.INVITED.value)
@@ -431,7 +461,8 @@ class Seeder:
         canc = self.ensure(Schedule, "hotel:cancelado", production_id=self.prods["hotel"].id,
                            title="Ensaio de marcação", type=S.REHEARSAL, start_time=at(self.T(9), 19),
                            end_time=at(self.T(9), 22), location="Sala de ensaio Lanterna",
-                           description="Marcação do segundo quadro.")
+                           description="Marcação do segundo quadro.",
+                           notes="Remarcar assim que a sala for liberada.")
         if not canc.is_cancelled:
             canc.is_cancelled = True
             canc.cancelled_at = self.now
@@ -452,6 +483,24 @@ class Seeder:
                  .replace("í", "i").replace("ó", "o").replace("ú", "u").replace("ú", "u").replace("ê", "e")
                  .replace("ü", "u").replace("ú", "u").replace("Ú", "u"))
         return f"{first} {last}", f"{plain}@email.example"
+
+    @staticmethod
+    def fake_phone(seed):
+        # 8 dígitos começando por 9: formato que não existe para celular no Brasil, logo não é de ninguém
+        return f"(11) 9555-{random.Random(f'tel:{seed}').randint(0, 9999):04d}"
+
+    @staticmethod
+    def batch_description(sessions, d):
+        days = [s[0] for s in sessions]
+        if d == min(days):
+            return "Sessão de estreia"
+        if d == max(days):
+            return "Última sessão da temporada"
+        if days.index(d) == 2:
+            return "Sessão com bate-papo com o elenco após o espetáculo"
+        if days.index(d) == 3:
+            return "Sessão com meia-entrada para estudantes da rede pública"
+        return None
 
     def tickets(self):
         plans = {
@@ -483,13 +532,15 @@ class Seeder:
                     status=TicketBatchStatus.COMPLETED if prod.status == ProductionStatus.ARCHIVED or past
                     else TicketBatchStatus.ON_SALE,
                     sale_start=at(self.T(d - 40), 10), sale_end=when,
+                    description=self.batch_description(sessions, d),
                 )
                 self.db.flush()
                 # Apresentação também aparece na agenda
                 self.ensure(Schedule, f"sessao:{pkey}:{d}", production_id=prod.id, title="Apresentação",
                             type=ScheduleType.PERFORMANCE, start_time=when,
                             end_time=when + timedelta(minutes=prod.duration_minutes or 90),
-                            location=prod.venue, description=f"Sessão de {prod.title}")
+                            location=prod.venue, description=f"Sessão de {prod.title}",
+                            notes="Elenco no teatro 2 horas antes. Abertura da casa 30 minutos antes.")
                 target = min(cap, int(round(cap * occ)))
                 sold = 0
                 group = 0
@@ -513,6 +564,8 @@ class Seeder:
                             if status == TicketStatus.USED else None,
                             checked_in_by_id=staff if status == TicketStatus.USED else None,
                             notes="Venda no balcão" if group % 3 else "Venda por telefone",
+                            buyer_phone=self.fake_phone(f"{pkey}{d}{group}") if group % 3 == 0 or group % 4 == 1 else None,
+                            seat_number=f"{chr(65 + (sold + n) // 12)}{(sold + n) % 12 + 1}",
                         )
                     sold += qty
                 # Alguns cancelamentos (não ocupam lugar)
@@ -644,8 +697,17 @@ class Seeder:
             for i, (name, rtype, status, qty, cost, supplier, place, resp) in enumerate(rows):
                 self.ensure(ProductionResource, f"{pkey}:{i}", production_id=self.prods[pkey].id, name=name, type=rtype,
                             status=status, quantity=qty, unit_cost=D(cost), supplier=supplier, location=place,
-                            responsible_id=self.users[resp].id if resp else None)
+                            responsible_id=self.users[resp].id if resp else None,
+                            notes=self.RESOURCE_NOTES.get(status) if random.Random(f"rec:{pkey}:{i}").random() < 0.7 else None)
         self.db.flush()
+
+    RESOURCE_NOTES = {
+        ResourceStatus.PLANNED: "Orçamento aprovado; aguardando confirmação do fornecedor.",
+        ResourceStatus.IN_PROGRESS: "Prova marcada para a próxima semana. Conferir medidas antes da entrega.",
+        ResourceStatus.AVAILABLE: "Conferido e guardado. Retirar com a produção.",
+        ResourceStatus.IN_USE: "Conferir antes de cada sessão e devolver ao lugar depois.",
+        ResourceStatus.MAINTENANCE: "Na locadora para revisão; previsão de retorno em 5 dias.",
+    }
 
     # ── Tarefas ───────────────────────────────────────────────────────────
     def tasks(self):
@@ -702,11 +764,53 @@ class Seeder:
         for pkey, rows in items.items():
             for i, (title, person, due, status, prio) in enumerate(rows):
                 self.ensure(ProductionTask, f"{pkey}:{i}", production_id=self.prods[pkey].id, title=title,
+                            description=self.TASK_DESC.get(title),
                             assignee_id=self.users[person].id, due_date=self.T(due), status=status, priority=prio,
                             completed_at=self.now - timedelta(days=1) if status == S.DONE else None)
         self.db.flush()
 
+    TASK_DESC = {
+        "Trocar lâmpada queimada da vara 2": "A lâmpada do refletor 7 queimou na última sessão. Há reposição no depósito técnico.",
+        "Revisar máquina de fumaça na locadora": "Está falhando no 3º ato. Confirmar com a locadora se há uma reserva.",
+        "Enviar release da última semana de temporada": "Mandar para a lista de imprensa com fotos novas e o link da bilheteria.",
+        "Lavar e passar figurinos para a sessão de sexta": "Atenção ao sobretudo de lã: só lavagem a seco.",
+        "Prestação de contas parcial do patrocínio": "Juntar as notas fiscais e o relatório de público até agora.",
+        "Ensaio de reposição com o ator substituto": "Repassar as marcações do 2º ato e as entradas de luz.",
+        "Fechar orçamento do projetor": "Comparar três locadoras; o limite previsto é R$ 3.200.",
+        "Finalizar figurino dos anos 1990": "Faltam os acessórios e a barra da calça.",
+        "Abrir venda de ingressos da estreia": "Criar os lotes das três primeiras sessões e divulgar o link.",
+        "Ensaio aberto para a imprensa": "Convidar jornalistas e críticos; reservar 20 lugares.",
+        "Definir trilha da cena final": "Duas opções em teste com a direção musical.",
+        "Testar as cinco portas da recepção": "Abrir e fechar cada porta 50 vezes e anotar as que travam.",
+        "Comprar campainhas extras": "Três campainhas de balcão iguais à de cena, para reposição.",
+        "Marcar sessão de fotos de divulgação": "Com figurino e cenário montados; elenco completo.",
+        "Decorar texto do 2º quadro": "Passagem de texto com a assistente de direção na quinta.",
+        "Manutenção dos bonecos gigantes": "Reforçar as armações e trocar as alças de dois bonecos.",
+        "Repor 3 sombrinhas danificadas": "Mesmo modelo e cores das originais.",
+        "Negociar transmissão com TV pública": "Enviar proposta com as datas das duas últimas semanas.",
+        "Ensaiar nova coreografia do bloco final": "Entra a partir da sessão de sábado.",
+        "Recolher notas fiscais da locação de som": "Necessárias para a prestação de contas do edital.",
+        "Contratar quarteto de cordas complementar": "Quatro músicos para as récitas; pedir currículo e cachê.",
+        "Aprovar maquete do farol": "Reunião com a cenógrafa para validar escala e materiais.",
+        "Inscrever projeto no edital de ópera": "Inscrição feita; protocolo arquivado no drive da companhia.",
+        "Agendar sessões para escolas": "Prioridade para escolas da rede pública do bairro.",
+        "Costurar remendos da lona final": "Usar o tecido listrado que sobrou da confecção.",
+        "Preparar material educativo para professores": "Guia de duas páginas com atividades antes e depois do espetáculo.",
+        "Concluir as 12 marionetes": "Faltam o acabamento de quatro e os figurinos de duas.",
+        "Fechar texto final": "Versão para leitura de mesa com o elenco.",
+        "Reservar Galpão Ateliê para a temporada": "Reserva confirmada por e-mail para todo o período.",
+        "Escrever projeto para edital de circulação": "Prazo do edital no fim do mês; incluir vídeo da pesquisa.",
+        "Registrar em vídeo a pesquisa de movimento": "Gravar os quatro intérpretes no Galpão Ateliê.",
+    }
+
     # ── Financeiro ────────────────────────────────────────────────────────
+    TX_NOTES = [
+        "Comprovante arquivado na pasta do financeiro.",
+        "Pago por transferência bancária.",
+        "Valor conferido com o contrato.",
+        "Incluído na prestação de contas do edital.",
+    ]
+
     def finance(self):
         C = TransactionCategory
         by = self.users["lucia"].id
@@ -785,7 +889,9 @@ class Seeder:
             for i, (d, kind, cat, amount, desc, ref, rec) in enumerate(rows):
                 self.ensure(FinancialTransaction, f"{pkey}:{i}", production_id=self.prods[pkey].id, created_by_id=by,
                             type=TransactionType(kind), category=cat, amount=D(amount), description=desc,
-                            reference_code=ref, date=self.T(d), is_reconciled=rec)
+                            reference_code=ref, date=self.T(d), is_reconciled=rec,
+                            notes="Aguardando conferência no extrato." if not rec else
+                            self.note(self.TX_NOTES, f"{pkey}:{i}", 0.6))
         self.db.flush()
         # Repasse da bilheteria = soma exata dos ingressos pagos de cada produção
         for pkey, prod in self.prods.items():
