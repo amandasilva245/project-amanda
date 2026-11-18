@@ -65,3 +65,9 @@ def test_attendees_come_in_stable_alphabetical_order(client, db, monkeypatch):
     first = ev.attendees[0]
     res = client.patch(f"/api/v1/schedules/{ev.id}/attendance/{first.user_id}", json={"status": "absent"}, headers=headers)
     assert [a["user"]["full_name"] for a in res.json()["attendees"]] == names
+
+
+def test_docs_short_url_redirects_to_swagger(client):
+    res = client.get("/docs", follow_redirects=False)
+    assert res.status_code in (302, 307) and res.headers["location"] == "/api/docs"
+    assert client.get("/api/docs").status_code == 200

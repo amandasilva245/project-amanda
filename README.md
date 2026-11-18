@@ -30,7 +30,7 @@ Aguarde cerca de 30 segundos para o banco inicializar. Depois acesse:
 |---|---|
 | http://localhost | Interface principal (via nginx) |
 | http://localhost:5173 | Frontend direto |
-| http://localhost:8000/api/docs | Documentação da API (Swagger UI; disponível quando `ENVIRONMENT` não é `production`) |
+| http://localhost:8000/docs | Documentação da API (Swagger UI; atalho para `/api/docs`, disponível quando `ENVIRONMENT` não é `production`) |
 
 ### Parar o sistema
 
@@ -40,7 +40,18 @@ docker compose down
 
 ### Reiniciar após mudanças no backend
 
-O backend tem hot-reload via volume mount — **não precisa reconstruir**.
+Com `ENVIRONMENT=development` no `.env` (o padrão do `.env.example`), o backend
+recarrega sozinho ao salvar um arquivo, via volume mount — **não precisa reconstruir**.
+Em `production`, sobe com vários workers e sem recarga automática.
+
+### Escalar o backend
+
+```bash
+docker compose up -d --scale backend=3   # até 10 réplicas (portas 8000–8009)
+```
+
+O nginx distribui as requisições entre as réplicas, e as migrações usam trava,
+então várias réplicas podem subir juntas.
 
 ### Reconstruir o frontend (após alterar arquivos em `frontend/src/`)
 

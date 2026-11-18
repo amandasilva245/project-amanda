@@ -95,6 +95,22 @@
   color: var(--gold-bright);
 }
 
+.heroSubtitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.memberNotes {
+  display: block;
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 2px;
+  white-space: pre-line;
+}
+
 .heroPlaywright {
   font-family: var(--font-display);
   font-size: var(--text-2xl);

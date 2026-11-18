@@ -251,7 +251,8 @@ export function TicketListModal({ open, onClose, batch, production }) {
                 <span className={styles.codeSmall}>{t.code}</span>
                 <span className={styles.buyer}>
                   {t.buyer_name}
-                  <small>{t.buyer_email}{t.seat_number ? ` · assento ${t.seat_number}` : ''}{t.is_premium ? ' · premium' : ''}</small>
+                  <small>{t.buyer_email}{t.buyer_phone ? ` · ${t.buyer_phone}` : ''}{t.seat_number ? ` · assento ${t.seat_number}` : ''}{t.is_premium ? ' · premium' : ''}</small>
+                  {t.notes && <small title={t.notes}>Obs.: {t.notes}</small>}
                 </span>
                 <span className={styles.price}>{fmtBRL(t.price_paid)}</span>
                 <StatusBadge status={t.status} />

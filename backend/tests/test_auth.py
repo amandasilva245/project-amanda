@@ -68,3 +68,17 @@ def test_diretorio_de_pessoas_sem_dados_sensiveis(client, make_user):
     res = client.get("/api/v1/auth/directory", headers=headers)
     assert res.status_code == 200
     assert "phone" not in res.json()[0]
+
+
+def test_mensagens_de_erro_em_portugues(client, make_user):
+    """As mensagens que a interface mostra vêm da API: precisam estar em português."""
+    user, _ = make_user(UserRole.ACTOR)
+    assert login(client, user.email, "Errada123").json()["detail"] == "E-mail ou senha incorretos."
+    _, admin = make_user(UserRole.ADMIN)
+    res = client.post("/api/v1/auth/users", headers=admin, json={
+        "email": "fraca@curtain.example", "full_name": "Senha Fraca", "password": "semnumero",
+    })
+    assert res.status_code == 422
+    assert "A senha deve ter ao menos 8 caracteres." in res.text or "letra maiúscula" in res.text or "número" in res.text
+    _, ator = make_user(UserRole.ACTOR)
+    assert client.get("/api/v1/auth/users", headers=ator).json()["detail"] == "Ação exclusiva do perfil Administrador(a)."

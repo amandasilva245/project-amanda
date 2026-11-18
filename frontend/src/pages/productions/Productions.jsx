@@ -22,7 +22,7 @@ const STATUS_FILTERS = [
   { label: 'Desenvolvimento', value: 'development' },
   { label: 'Pré-Produção',   value: 'pre_production' },
   { label: 'Ensaios',        value: 'rehearsal' },
-  { label: 'Em Cartaz',      value: 'performance' },
+  { label: 'Em cartaz',      value: 'performance' },
   { label: 'Arquivadas',     value: 'archived' },
 ]
 
@@ -72,7 +72,7 @@ export default function Productions() {
         <div className={styles.actions}>
           {canCreate && (
             <Button variant="primary" leftIcon={Plus} onClick={openCreate}>
-              Nova Produção
+              Nova produção
             </Button>
           )}
         </div>
@@ -117,7 +117,7 @@ export default function Productions() {
             className={`${styles.viewBtn} ${view === 'timeline' ? styles.active : ''}`}
             onClick={() => setView('timeline')}
           >
-            Linha do Tempo
+            Linha do tempo
           </button>
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function Productions() {
               </p>
               {canCreate && !debouncedSearch && (
                 <Button variant="outline" leftIcon={Plus} onClick={openCreate}>
-                  Nova Produção
+                  Nova produção
                 </Button>
               )}
             </div>

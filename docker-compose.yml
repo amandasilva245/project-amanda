@@ -35,7 +35,9 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      # Faixa de portas: permite "docker compose up -d --scale backend=N" (RNF07).
+      # A primeira réplica fica em 8000; o nginx distribui entre todas.
+      - "8000-8009:8000"
     environment:
       DATABASE_URL: postgresql://curtain_user:${DB_PASSWORD}@db:5432/curtain_db
       SECRET_KEY: ${SECRET_KEY}

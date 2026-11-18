@@ -28,7 +28,7 @@ def get_financial_summary(
     service = FinancialService(db)
     summary = service.get_production_summary(production_id)
     if not summary:
-        raise HTTPException(status_code=404, detail="Production not found")
+        raise HTTPException(status_code=404, detail="Produção não encontrada.")
     return FinancialSummary(**summary)
 
 
@@ -39,7 +39,7 @@ def get_cashflow(
     current_user: User = Depends(require_roles(*WRITE_ROLES)),
 ):
     if not db.query(Production.id).filter(Production.id == production_id).first():
-        raise HTTPException(status_code=404, detail="Production not found")
+        raise HTTPException(status_code=404, detail="Produção não encontrada.")
     service = FinancialService(db)
     return service.get_monthly_cashflow(production_id)
 
@@ -76,7 +76,7 @@ def list_transactions(
             t = TransactionType(type)
             query = query.filter(FinancialTransaction.type == t)
         except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid transaction type")
+            raise HTTPException(status_code=400, detail="Tipo de lançamento inválido.")
     if category:
         query = query.filter(FinancialTransaction.category == category)
     if is_reconciled is not None:
@@ -102,7 +102,7 @@ def create_transaction(
     current_user: User = Depends(require_roles(*WRITE_ROLES)),
 ):
     if not db.query(Production.id).filter(Production.id == payload.production_id).first():
-        raise HTTPException(status_code=404, detail="Production not found")
+        raise HTTPException(status_code=404, detail="Produção não encontrada.")
     transaction = FinancialTransaction(
         **payload.model_dump(),
         created_by_id=current_user.id,
@@ -122,7 +122,7 @@ def update_transaction(
 ):
     transaction = db.query(FinancialTransaction).filter(FinancialTransaction.id == transaction_id).first()
     if not transaction:
-        raise HTTPException(status_code=404, detail="Transaction not found")
+        raise HTTPException(status_code=404, detail="Lançamento não encontrado.")
 
     changes = payload.model_dump(exclude_none=True)
     try:
@@ -144,6 +144,6 @@ def delete_transaction(
 ):
     transaction = db.query(FinancialTransaction).filter(FinancialTransaction.id == transaction_id).first()
     if not transaction:
-        raise HTTPException(status_code=404, detail="Transaction not found")
+        raise HTTPException(status_code=404, detail="Lançamento não encontrado.")
     db.delete(transaction)
     db.commit()

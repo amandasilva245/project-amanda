@@ -160,7 +160,9 @@ export default function Tickets() {
                           </p>
                           <StatusBadge status={batch.status} />
                         </div>
-                        {batch.venue_section && <p className={styles.batchSection}>{batch.venue_section}</p>}
+                        {(batch.venue_section || batch.description) && (
+                          <p className={styles.batchSection}>{[batch.venue_section, batch.description].filter(Boolean).join(' · ')}</p>
+                        )}
                       </div>
                       <div className={styles.batchStats}>
                         <div className={styles.batchOccBar} role="img" aria-label={`${occ}% ocupado`}>

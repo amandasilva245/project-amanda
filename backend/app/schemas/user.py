@@ -17,11 +17,11 @@ class UserBase(BaseModel):
 
 def _validate_password_strength(v: str) -> str:
     if len(v) < 8:
-        raise ValueError("Password must be at least 8 characters")
+        raise ValueError("A senha deve ter ao menos 8 caracteres.")
     if not re.search(r"[A-Z]", v):
-        raise ValueError("Password must contain at least one uppercase letter")
+        raise ValueError("A senha deve ter ao menos uma letra maiúscula.")
     if not re.search(r"\d", v):
-        raise ValueError("Password must contain at least one digit")
+        raise ValueError("A senha deve ter ao menos um número.")
     return v
 
 

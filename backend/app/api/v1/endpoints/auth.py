@@ -37,7 +37,7 @@ def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)
             logger.warning("Falha de login para %s", mask_email(email))
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials",
+                detail="E-mail ou senha incorretos.",
             )
 
         rate_limit.reset(limiter_key)
@@ -53,7 +53,7 @@ def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)
         raise
     except Exception as e:
         logger.error(f"Login error: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor. Tente novamente.")
 
 
 @router.post("/refresh", response_model=TokenResponse)
@@ -64,14 +64,14 @@ def refresh_token(
 ):
     token = (body.refresh_token if body else None) or refresh_token
     if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sessão expirada. Entre novamente.")
     payload = decode_token(token)
     if not payload or payload.get("type") != "refresh":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sessão expirada. Entre novamente.")
 
     user = db.query(User).filter(User.id == payload["sub"], User.is_active == True).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Pessoa não encontrada.")
 
     return TokenResponse(
         access_token=create_access_token(user.id),
@@ -124,7 +124,7 @@ def list_directory(
 def create_user(payload: UserCreate, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email.ilike(payload.email)).first()
     if existing:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Já existe uma pessoa cadastrada com esse e-mail.")
 
     user = User(
         email=payload.email.strip().lower(),
@@ -154,7 +154,7 @@ def update_user(
 ):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pessoa não encontrada.")
     # Impede que o admin se tranque fora do sistema
     if user.id == current_user.id and (payload.is_active is False or (payload.role and payload.role != user.role)):
         raise HTTPException(status_code=400, detail="Você não pode desativar nem rebaixar a própria conta.")

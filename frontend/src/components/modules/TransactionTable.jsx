@@ -56,6 +56,7 @@ export default function TransactionTable({ transactions, onEdit, showProduction 
                       {showProduction && tx.reference_code && ' · '}
                       {tx.reference_code && `Ref. ${tx.reference_code}`}
                     </span>
+                    {tx.notes && <span className={styles.sub} title={tx.notes}>Obs.: {tx.notes}</span>}
                   </div>
                 </div>
               </td>
