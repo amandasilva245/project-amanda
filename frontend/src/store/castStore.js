@@ -31,6 +31,17 @@ export const useCastStore = create((set) => ({
     }
   },
 
+  // RF05: admin edita dados, perfil de acesso e situação (ativo/inativo)
+  updateMember: async (id, data) => {
+    try {
+      const res = await api.patch(`/api/v1/auth/users/${id}`, data)
+      set((s) => ({ members: s.members.map((m) => (m.id === id ? res.data : m)), error: null }))
+      return { ok: true }
+    } catch (err) {
+      return { ok: false, error: getErrorMessage(err) }
+    }
+  },
+
   assignToProduction: async (productionId, data) => {
     try {
       const res = await api.post(`/api/v1/productions/${productionId}/participants`, stripEmpty(data))

@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from fastapi.responses import RedirectResponse
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -48,6 +49,16 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # ─── Routes ───────────────────────────────────────────────────────────────────
 app.include_router(api_router, prefix="/api/v1")
+
+if app.docs_url:
+    # Endereço curto citado no TCC (RNF12): /docs e /redoc levam ao Swagger e ao ReDoc
+    @app.get("/docs", include_in_schema=False)
+    def _docs_alias():
+        return RedirectResponse(app.docs_url)
+
+    @app.get("/redoc", include_in_schema=False)
+    def _redoc_alias():
+        return RedirectResponse(app.redoc_url)
 
 
 @app.exception_handler(RequestValidationError)

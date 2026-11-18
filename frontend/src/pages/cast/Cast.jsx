@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, UserPlus, Users, Theater, Mail, Phone } from 'lucide-react'
+import { Search, UserPlus, Users, Theater, Mail, Phone, Pencil } from 'lucide-react'
 import { useCastStore } from '@/store/castStore'
 import { useProductionStore } from '@/store/productionStore'
 import { useAuthStore } from '@/store/authStore'
@@ -11,6 +11,7 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Modal from '@/components/ui/Modal'
 import { StatusBadge } from '@/components/ui/Badge'
+import { Select, Textarea } from '@/components/ui/Field'
 import styles from './Cast.module.css'
 
 const ROLE_OPTIONS = [
@@ -20,6 +21,8 @@ const ROLE_OPTIONS = [
   { value: 'producer',          label: 'Produtor(a)' },
   { value: 'financial_manager', label: 'Gestor(a) Financeiro' },
 ]
+// Edição pelo admin inclui o próprio perfil de administrador (RF04)
+const EDIT_ROLE_OPTIONS = [...ROLE_OPTIONS, { value: 'admin', label: 'Administrador(a)' }]
 
 const DEPT_OPTIONS = [
   { value: 'cast',           label: 'Elenco' },
@@ -47,6 +50,7 @@ const emptyAssign = {
 
 export default function Cast() {
   const { members, loading, error, fetchMembers, createMember, assignToProduction, clearError } = useCastStore()
+  const [editing, setEditing] = useState(null)
   const { productions, fetchProductions } = useProductionStore()
   // Cadastrar pessoas é exclusivo do admin na API (POST /auth/users)
   const isAdmin = useAuthStore((s) => s.user?.role === 'admin')
@@ -208,9 +212,13 @@ export default function Cast() {
                     className={styles.roleBadge}
                     style={{ color: ROLE_COLORS[m.role] ?? 'var(--text-muted)' }}
                   >
-                    {ROLE_OPTIONS.find((r) => r.value === m.role)?.label ?? m.role}
+                    {EDIT_ROLE_OPTIONS.find((r) => r.value === m.role)?.label ?? m.role}
                   </span>
                 </div>
+                {isAdmin && (
+                  <Button size="sm" variant="ghost" leftIcon={Pencil} className={styles.editBtn}
+                    aria-label={`Editar ${m.full_name}`} title="Editar pessoa" onClick={() => setEditing(m)} />
+                )}
               </div>
 
               <div className={styles.contactList}>
@@ -462,7 +470,60 @@ export default function Cast() {
           </div>
         </form>
       </Modal>
+      {editing && <EditMemberModal member={editing} onClose={() => setEditing(null)} />}
     </div>
   )
 }
 
+
+
+/** RF05: o administrador edita nome, contato, perfil de acesso e desativa a conta. */
+function EditMemberModal({ member, onClose }) {
+  const updateMember = useCastStore((s) => s.updateMember)
+  const selfId = useAuthStore((s) => s.user?.id)
+  const isSelf = member.id === selfId
+  const [form, setForm] = useState({
+    full_name: member.full_name ?? '', phone: member.phone ?? '', bio: member.bio ?? '',
+    role: member.role, is_active: member.is_active,
+  })
+  const [error, setError] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const set = (k) => (e) => setForm({ ...form, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value })
+
+  const submit = async (e) => {
+    e.preventDefault()
+    if (!form.full_name.trim()) { setError('Nome completo é obrigatório.'); return }
+    setSaving(true)
+    const res = await updateMember(member.id, { ...form, full_name: form.full_name.trim() })
+    setSaving(false)
+    if (res.ok) onClose()
+    else setError(res.error)
+  }
+
+  return (
+    <Modal open onClose={onClose} title="Editar pessoa" description={member.email} size="md">
+      <form onSubmit={submit} className={styles.editForm} noValidate>
+        <Input label="Nome completo *" value={form.full_name} onChange={set('full_name')} autoFocus />
+        <div className={styles.editRow}>
+          <Input label="Telefone" value={form.phone} onChange={set('phone')} placeholder="+55 11 99999-0000" />
+          <Select label="Perfil de acesso" value={form.role} onChange={set('role')} options={EDIT_ROLE_OPTIONS} disabled={isSelf} />
+        </div>
+        <Textarea label="Bio / Notas" rows={3} value={form.bio} onChange={set('bio')} />
+        <label className={styles.activeToggle}>
+          <input type="checkbox" checked={form.is_active} onChange={set('is_active')} disabled={isSelf} />
+          <span>
+            Conta ativa
+            <small>{isSelf
+              ? 'Você não pode desativar nem mudar o perfil da própria conta.'
+              : 'Desmarque para bloquear o acesso. O histórico nas produções é mantido.'}</small>
+          </span>
+        </label>
+        {error && <p className={styles.formError} role="alert">{error}</p>}
+        <div className={styles.editActions}>
+          <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
+          <Button type="submit" variant="primary" loading={saving}>Salvar</Button>
+        </div>
+      </form>
+    </Modal>
+  )
+}

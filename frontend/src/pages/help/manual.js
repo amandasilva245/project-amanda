@@ -144,6 +144,16 @@ export const MANUAL = [
         'Opcionalmente, já escolha uma produção, a função e o departamento.',
         'Clique em **Cadastrar**.',
       ] },
+      { h: 'Editar ou desativar uma pessoa' },
+      { p: 'Também é exclusivo do Administrador(a).' },
+      { steps: [
+        'No cartão da pessoa, clique no ícone de lápis (**Editar pessoa**).',
+        'Altere o nome, o telefone, a bio ou o **perfil de acesso**.',
+        'Para bloquear o acesso, desmarque **Conta ativa**. A pessoa deixa de conseguir entrar, mas o histórico dela nas produções é mantido, e o cartão passa a mostrar **Inativo**.',
+        'Clique em **Salvar**. Para devolver o acesso, marque **Conta ativa** de novo.',
+      ] },
+      { img: 'elenco-editar', caption: 'Edição de uma pessoa pelo administrador.' },
+      { note: 'O administrador não pode desativar nem mudar o perfil da própria conta, para não ficar sem acesso ao sistema.' },
       { h: 'Escalar alguém em uma produção' },
       { steps: [
         'Abra a produção e vá para a aba **Companhia**.',
